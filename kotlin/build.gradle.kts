@@ -13,6 +13,7 @@ tasks.withType<Test> {
 
 dependencies {
     implementation(kotlin("stdlib"))
+    implementation("com.google.guava:guava:30.1-jre")
 
     testImplementation(platform("org.junit:junit-bom:5.7.1"))
     testImplementation("org.junit.jupiter:junit-jupiter")
