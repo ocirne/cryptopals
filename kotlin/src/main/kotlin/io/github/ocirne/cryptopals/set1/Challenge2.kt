@@ -5,7 +5,7 @@ import kotlin.experimental.xor
 
 class Challenge2 {
 
-    fun fixedXor(t: String, s: String): Any {
+    fun fixedXor(t: String, s: String): String {
         val tBa = BaseEncoding.base16().decode(t.toUpperCase())
         val sBa = BaseEncoding.base16().decode(s.toUpperCase())
         val cBa = tBa.zip(sBa).map { (a, b) -> a.xor(b) }.toByteArray()
