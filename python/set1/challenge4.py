@@ -1,4 +1,5 @@
 from collections import Counter
+from pathlib import Path
 
 
 def fixed_xor_single_byte(secret, key):
@@ -37,11 +38,10 @@ def with_challenge3(secret):
         print(pretty_print(plain_ba), end='')
 
 
-def challenge4():
+def challenge4(lines):
     """
-    >>> challenge4()
+    >>> challenge4(open(Path(__file__).parent / 'resources/4.txt', 'r').readlines())
     Now that the party is jumping
     """
-    with open('resources/4.txt', 'r') as f:
-        for line in f:
-            with_challenge3(line)
+    for line in lines:
+        with_challenge3(line)
