@@ -9,6 +9,6 @@ internal class Challenge3Test {
     fun `Single-byte XOR cipher`() {
         val secret = "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736"
         val plain = "Cooking MC's like a pound of bacon"
-        Challenge3().decrypt(secret) shouldBe plain
+        Challenge3().run(secret) shouldBe plain
     }
 }

@@ -10,6 +10,6 @@ internal class Challenge2Test {
         val t = "1c0111001f010100061a024b53535009181c"
         val s = "686974207468652062756c6c277320657965"
         val c = "746865206b696420646f6e277420706c6179"
-        Challenge2().fixedXor(t, s) shouldBe c
+        Challenge2().run(t, s) shouldBe c
     }
 }

@@ -1,14 +1,13 @@
 package io.github.ocirne.cryptopals.set1
 
-import com.google.common.io.BaseEncoding
-import kotlin.experimental.xor
+import io.github.ocirne.cryptopals.Basics
 
 class Challenge2 {
 
-    fun fixedXor(t: String, s: String): String {
-        val tBa = BaseEncoding.base16().decode(t.toUpperCase())
-        val sBa = BaseEncoding.base16().decode(s.toUpperCase())
-        val cBa = tBa.zip(sBa).map { (a, b) -> a.xor(b) }.toByteArray()
-        return BaseEncoding.base16().encode(cBa).toLowerCase()
+    fun run(t: String, s: String): String {
+        val x = Basics.decodeHexString(t)
+        val y = Basics.decodeHexString(s)
+        val c = Basics.xor(x, y)
+        return Basics.encodeHexString(c)
     }
 }

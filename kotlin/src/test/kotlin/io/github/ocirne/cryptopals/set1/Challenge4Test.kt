@@ -9,6 +9,6 @@ internal class Challenge4Test {
     fun `Detect single-character XOR`() {
         val secrets = this::class.java.classLoader.getResourceAsStream("set1/4.txt")!!.bufferedReader().readLines()
         val plain = "Now that the party is jumping\n"
-        Challenge4().decrypt(secrets) shouldBe plain
+        Challenge4().run(secrets) shouldBe plain
     }
 }
