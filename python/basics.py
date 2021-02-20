@@ -25,5 +25,15 @@ def most_common(ba: bytearray):
     return Counter(ba).most_common(1)[0][0]
 
 
+def calc_score(plain: bytearray):
+    # 'A' - 'Z'
+    total_upper = sum(1 for c in plain if 65 <= c <= 90)
+    # 'a' - 'z'
+    total_lower = sum(1 for c in plain if 97 <= c <= 122)
+    # ' '
+    total_blank = sum(1 for s in plain if s == 32)
+    return (total_upper + total_lower + total_blank) / len(plain)
+
+
 def pretty_format(ba: bytearray):
     return "".join(chr(b) for b in ba)

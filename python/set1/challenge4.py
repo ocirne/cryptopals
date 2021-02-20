@@ -1,17 +1,5 @@
 from pathlib import Path
-from ..basics import from_hex, most_common, pretty_format, xor_single
-
-
-def is_plausible_plain(plain: bytearray):
-    total_ascii = total_blank = 0
-    for x in plain:
-        # 97: 'a', 122: 'z'
-        if 97 <= x <= 122:
-            total_ascii += 1
-        # 32: space
-        if 32 == x:
-            total_blank += 1
-    return total_ascii >= 20 and total_blank >= 5
+from ..basics import from_hex, most_common, pretty_format, xor_single, calc_score
 
 
 def decrypt(secret):
@@ -19,7 +7,8 @@ def decrypt(secret):
     most_common_byte = most_common(s)
     key = most_common_byte ^ ord(' ')
     plain = xor_single(s, key)
-    if is_plausible_plain(plain):
+    score = calc_score(plain)
+    if score > 0.9:
         return pretty_format(plain)
 
 
