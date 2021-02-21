@@ -22,6 +22,11 @@ object Basics {
         return Base64.getEncoder().encodeToString(byteArray)
     }
 
+    fun decodeFromBase64(text: String): ByteArray {
+        val base64String = text.filter { c -> !c.isWhitespace() }
+        return Base64.getDecoder().decode(base64String)
+    }
+
     private fun xor(byteArray: ByteArray, y: Iterable<Byte>): ByteArray {
         return byteArray.zip(y).map { (a, b) -> a xor b }.toByteArray()
     }
