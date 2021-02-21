@@ -16,21 +16,23 @@ def hamming_distance(s1: bytearray, s2: bytearray):
     return sum(bin(x ^ y).count('1') for x, y in zip(s1, s2))
 
 
-def factor(x):
+def cheap_factor(x):
     """
-    Cheap prime factors without repitition
-    >>> factor(91)
+    Cheap prime factors without repetition
+    >>> cheap_factor(91)
     [7, 13]
-    >>> factor(12)
+    >>> cheap_factor(12)
     [2, 3]
     """
-    ret = defaultdict(lambda: 0)
-    while x > 1:
-        for i in range(2, x + 1):
+    ret = list()
+    i = 2
+    while i <= x:
+        if x % i == 0:
+            ret.append(i)
             while x % i == 0:
-                x = x // i
-                ret[i] += 1
-    return list(ret.keys())
+                x //= i
+        i += 1
+    return ret
 
 
 def read_file():
@@ -50,7 +52,7 @@ def get_common_distance(count_blocks=4):
         normalized_mean_distance = \
             mean(hamming_distance(block1, block2) / key_size for block1, block2 in combinations(blocks, 2))
         if normalized_mean_distance < 3:
-            distances.extend(factor(key_size))
+            distances.extend(cheap_factor(key_size))
     return Counter(distances).most_common(1)[0][0]
 
 
@@ -63,9 +65,9 @@ def find_key(transposed_block):
     return most_common_byte ^ ord(' ')
 
 
-def find_keys():
+def detect_key():
     """
-    >>> find_keys()
+    >>> detect_key()
     'Terminator X: Bring the noise'
     """
     cipher = read_file()
