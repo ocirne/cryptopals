@@ -5,17 +5,15 @@ from ..basics import from_hex
 
 
 def detect_collision(line):
-    detected = False
-    a0 = line[::16]
-    a1 = line[1::16]
+    a = line[::16]
+    b = line[1::16]
     for i, j in combinations(range(10), 2):
-        if a0[i] == a0[j] and a1[i] == a1[j]:
+        if a[i] == a[j] and b[i] == b[j]:
             # print(i, j)
             # print(line.hex()[1 * 32:2 * 32])
             # print(line.hex()[5 * 32:6 * 32])
             # print(line.hex()[7 * 32:8 * 32])
-            detected = True
-    return detected
+            return True
 
 
 def detect_all_collisions(lines):
