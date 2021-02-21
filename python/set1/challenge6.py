@@ -1,10 +1,9 @@
 import base64
 from itertools import combinations
 from collections import defaultdict, Counter
-from operator import itemgetter
 from pathlib import Path
 from statistics import mean
-from ..basics import calc_score, xor_cycle, xor_single, pretty_format
+from ..basics import most_common, xor_cycle, pretty_format
 
 
 def hamming_distance(s1: bytearray, s2: bytearray):
@@ -60,8 +59,8 @@ def transpose(text, key_size):
 
 
 def find_key(transposed_block):
-    key, score = max(((key, calc_score(xor_single(transposed_block, key))) for key in range(256)), key=itemgetter(1))
-    return key
+    most_common_byte = most_common(transposed_block)
+    return most_common_byte ^ ord(' ')
 
 
 def find_keys():
