@@ -1,7 +1,10 @@
 package io.github.ocirne.cryptopals.set1
 
 import io.github.ocirne.cryptopals.Basics
+import io.github.ocirne.cryptopals.Basics.Extensions.mostCommon
 import kotlin.experimental.xor
+
+import io.github.ocirne.cryptopals.Basics.mostCommon
 
 class Challenge6(text: String) {
 
@@ -36,24 +39,22 @@ class Challenge6(text: String) {
         return result
     }
 
-    fun checkKeySize(keySize: Int): List<Int> {
-        val blocks = content.asIterable().chunked(keySize)
-        val normalizedMeanDistance = blocks.pairs
+    private fun checkKeySize(keySize: Int): List<Int> {
+        val blocks = content.asIterable().chunked(keySize).take(4).map { b -> b.toByteArray() }
+        val distances = mutableListOf<Int>()
+        for (block1 in blocks) {
+            for (block2 in blocks) {
+                if (block1.hashCode() < block2.hashCode()) {
+                    distances.add(hammingDistance(block1, block2))
+                }
+            }
+        }
+        return if (distances.average() / keySize < 3) cheapFactor(keySize) else listOf()
     }
 
     fun getCommonDistance(): Int {
-        val distances = IntRange(2, 100).flatMap { keySize -> checkKeySize(keySize) }.toByteArray()
-        return Basics.mostCommon(distances)
-
-        distances = []
-        for key_size in range(2, 100):
-            blocks = (cipher[i * key_size:(i + 1) * key_size] for i in range(4))
-            normalized_mean_distance = \
-                mean(hamming_distance(block1, block2) / key_size for block1, block2 in combinations(blocks, 2))
-            if normalized_mean_distance < 3:
-                distances.extend(factor(key_size))
-        return Counter(distances).most_common(1)[0][0]
-        */
+        val distances = IntRange(2, 100).flatMap { keySize -> checkKeySize(keySize) }
+        return mostCommon(distances)
     }
 
     private fun transpose(keySize: Int): List<ByteArray> {
@@ -63,7 +64,7 @@ class Challenge6(text: String) {
     }
 
     private fun findKeyLetter(transposed_block: ByteArray): Byte {
-        val mostCommonByte = Basics.mostCommon(transposed_block)
+        val mostCommonByte = transposed_block.mostCommon()
         return mostCommonByte xor ' '.toByte()
     }
 

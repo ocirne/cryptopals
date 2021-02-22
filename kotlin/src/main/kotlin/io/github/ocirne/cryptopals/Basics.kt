@@ -1,13 +1,17 @@
 package io.github.ocirne.cryptopals
 
 import com.google.common.io.BaseEncoding
+import io.github.ocirne.cryptopals.Basics.Extensions.cycle
 import java.util.Base64
 import kotlin.experimental.xor
 
 object Basics {
 
-    private fun ByteArray.cycle() =
-        generateSequence(0) { (it + 1) % this.size }.map { this[it] }.asIterable()
+    object Extensions {
+        fun ByteArray.cycle() = generateSequence(0) { (it + 1) % this.size }.map { this[it] }.asIterable()
+
+        fun ByteArray.mostCommon() = mostCommon(this.asList())
+    }
 
     fun decodeHexString(hexString: String): ByteArray {
         val correctedHexString = if (hexString.length % 2 != 0) hexString.dropLast(1) else hexString
@@ -43,8 +47,8 @@ object Basics {
         return xorCycle(byteArray, byteArrayOf(key))
     }
 
-    fun mostCommon(byteArray: ByteArray): Byte {
-        val counts = byteArray.toTypedArray().groupingBy { it }.eachCount()
+    fun <T> mostCommon(list: List<T>): T {
+        val counts = list.groupingBy { it }.eachCount()
         return counts.maxByOrNull { it.value }!!.key
     }
 
