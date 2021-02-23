@@ -50,6 +50,7 @@ def hamming_distance(s1: bytearray, s2: bytearray):
 
 
 def padding(ba: bytearray, pad_byte='\x00', block_size=16):
+    if len(ba) % block_size == 0:
+        return ba
     pad_length = block_size - len(ba) % block_size
     return ba + bytearray(pad_byte * pad_length, 'UTF-8')
-
