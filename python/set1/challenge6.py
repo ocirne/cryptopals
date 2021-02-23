@@ -1,6 +1,6 @@
 import base64
 from itertools import combinations
-from collections import defaultdict, Counter
+from collections import Counter
 from pathlib import Path
 from statistics import mean
 from ..basics import most_common, xor_cycle, pretty_format

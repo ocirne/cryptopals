@@ -1,5 +1,7 @@
+from basics import padding, pretty_format
 
-def challenge9(text, pad_byte, block_length):
+
+def challenge9(text, pad_byte, block_size):
     """
     >>> padded = challenge9("YELLOW SUBMARINE", '\\x04', 20)
     >>> padded
@@ -7,4 +9,5 @@ def challenge9(text, pad_byte, block_length):
     >>> len(padded)
     20
     """
-    return text + pad_byte * (block_length - len(text))
+    ba = bytearray(text, 'UTF-8')
+    return pretty_format(padding(ba, pad_byte, block_size))

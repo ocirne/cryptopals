@@ -37,3 +37,9 @@ def calc_score(plain: bytearray):
 
 def pretty_format(ba: bytearray):
     return "".join(chr(b) for b in ba)
+
+
+def padding(ba: bytearray, pad_byte='\x00', block_size=16):
+    pad_length = block_size - len(ba) % block_size
+    return ba + bytearray(pad_byte * pad_length, 'UTF-8')
+
