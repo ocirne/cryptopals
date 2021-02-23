@@ -39,6 +39,16 @@ def pretty_format(ba: bytearray):
     return "".join(chr(b) for b in ba)
 
 
+def hamming_distance(s1: bytearray, s2: bytearray):
+    """
+    >>> t1 = bytearray('this is a test', 'UTF-8')
+    >>> t2 = bytearray('wokka wokka!!!', 'UTF-8')
+    >>> hamming_distance(t1, t2)
+    37
+    """
+    return sum(bin(x ^ y).count('1') for x, y in zip(s1, s2))
+
+
 def padding(ba: bytearray, pad_byte='\x00', block_size=16):
     pad_length = block_size - len(ba) % block_size
     return ba + bytearray(pad_byte * pad_length, 'UTF-8')

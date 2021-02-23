@@ -3,17 +3,7 @@ from itertools import combinations
 from collections import Counter
 from pathlib import Path
 from statistics import mean
-from ..basics import most_common, xor_cycle, pretty_format
-
-
-def hamming_distance(s1: bytearray, s2: bytearray):
-    """
-    >>> t1 = bytearray('this is a test', 'UTF-8')
-    >>> t2 = bytearray('wokka wokka!!!', 'UTF-8')
-    >>> hamming_distance(t1, t2)
-    37
-    """
-    return sum(bin(x ^ y).count('1') for x, y in zip(s1, s2))
+from ..basics import hamming_distance, most_common, xor_cycle, pretty_format
 
 
 def cheap_factor(x):
