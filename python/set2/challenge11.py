@@ -5,12 +5,9 @@ from basics import padding
 
 
 def encryption_oracle(content, mode_for_testing=None):
-    before_size = random.randint(5, 10)
-    after_size = random.randint(5, 10)
-    before = secrets.token_bytes(before_size)
-    after = secrets.token_bytes(after_size)
-    padded1 = before + content + after
-    padded2 = padding(padded1)
+    prefix = secrets.token_bytes(random.randint(5, 10))
+    suffix = secrets.token_bytes(random.randint(5, 10))
+    padded = padding(prefix + content + suffix)
     key = secrets.token_bytes(16)
     if mode_for_testing is None:
         mode = AES.MODE_ECB if bool(random.getrandbits(1)) else AES.MODE_CBC
@@ -18,7 +15,7 @@ def encryption_oracle(content, mode_for_testing=None):
         mode = mode_for_testing
     iv = secrets.token_bytes(16)
     aes = AES.new(key, mode, iv)
-    return aes.encrypt(padded2)
+    return aes.encrypt(padded)
 
 
 def encryption_detector(mode_for_testing=None):
