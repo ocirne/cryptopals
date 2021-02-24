@@ -18,7 +18,7 @@ def detect_collision(line):
 
 def detect_all_collisions(lines):
     """
-    >>> detect_all_collisions(open(Path(__file__).parent / 'resources/8.txt', 'r').readlines())
+    >>> detect_all_collisions(open(Path(__file__).parent / 'resources/8.txt').readlines())
     133
     """
     for line_no, line in enumerate(lines):

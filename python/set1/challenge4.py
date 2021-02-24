@@ -14,7 +14,7 @@ def decrypt(secret):
 
 def challenge4(lines):
     """
-    >>> challenge4(open(Path(__file__).parent / 'resources/4.txt', 'r').readlines())
+    >>> challenge4(open(Path(__file__).parent / 'resources/4.txt').readlines())
     Now that the party is jumping
     """
     results = (decrypt(line) for line in lines)

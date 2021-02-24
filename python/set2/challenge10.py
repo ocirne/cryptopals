@@ -10,7 +10,7 @@ def challenge10(filename, key, iv):
     >>> plain.startswith(b"I'm back and I'm ringin' the bell")
     True
     """
-    with open(filename, 'r') as f:
+    with open(filename) as f:
         content = f.read()
     ba = base64.b64decode(content)
     cipher = AES.new(key, AES.MODE_CBC, iv)

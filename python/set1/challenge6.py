@@ -26,7 +26,7 @@ def cheap_factor(x):
 
 
 def read_file():
-    with open(Path(__file__).parent / 'resources/6.txt', 'r') as f:
+    with open(Path(__file__).parent / 'resources/6.txt') as f:
         return bytearray(base64.b64decode(f.read()))
 
 
