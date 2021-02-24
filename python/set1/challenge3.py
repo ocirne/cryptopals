@@ -1,4 +1,4 @@
-from ..basics import from_hex, most_common, pretty_format, xor_single
+from ..basics import from_hex, most_common, xor_single
 
 
 def challenge3(secret):
@@ -10,4 +10,4 @@ def challenge3(secret):
     most_common_byte = most_common(s)
     key = most_common_byte ^ ord(' ')
     plain_ba = xor_single(s, key)
-    return pretty_format(plain_ba)
+    return plain_ba.decode()

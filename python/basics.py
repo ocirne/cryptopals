@@ -35,10 +35,6 @@ def calc_score(plain: bytearray):
     return (total_upper + total_lower + total_blank) / len(plain)
 
 
-def pretty_format(ba: bytearray):
-    return "".join(chr(b) for b in ba)
-
-
 def hamming_distance(s1: bytearray, s2: bytearray):
     """
     >>> t1 = bytearray('this is a test', 'UTF-8')

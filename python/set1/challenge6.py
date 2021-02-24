@@ -3,7 +3,7 @@ from itertools import combinations
 from collections import Counter
 from pathlib import Path
 from statistics import mean
-from ..basics import hamming_distance, most_common, xor_cycle, pretty_format
+from ..basics import hamming_distance, most_common, xor_cycle
 
 
 def cheap_factor(x):
@@ -61,14 +61,15 @@ def detect_key():
     'Terminator X: Bring the noise'
     """
     cipher = read_file()
-    return ''.join(chr(find_key(block)) for block in transpose(cipher, 29))
+    key = bytearray(find_key(block) for block in transpose(cipher, 29))
+    return key.decode()
 
 
 def decrypt_text(key):
     cipher = read_file()
     k = bytearray(key, 'UTF-8')
     plain = xor_cycle(cipher, k)
-    return pretty_format(plain)
+    return plain.decode()
 
 
 if __name__ == '__main__':

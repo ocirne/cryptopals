@@ -1,7 +1,7 @@
 from Crypto.Cipher import AES
 import secrets
 from base64 import b64decode
-from basics import padding, pretty_format
+from basics import padding
 
 key = secrets.token_bytes(16)
 
@@ -65,7 +65,7 @@ def encryption_detector(printing=False):
         secret = encryption_oracle(b"\x00" * i)
         b = lookup(i, secret[:160], known)
         if not b:
-            return pretty_format(known)
+            return known.decode()
         known.append(b)
         if printing:
             print(chr(b), end='')

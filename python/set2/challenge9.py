@@ -1,4 +1,4 @@
-from basics import padding, pretty_format
+from basics import padding
 
 
 def challenge9(text, pad_byte, block_size):
@@ -10,4 +10,4 @@ def challenge9(text, pad_byte, block_size):
     20
     """
     ba = bytearray(text, 'UTF-8')
-    return pretty_format(padding(ba, pad_byte, block_size))
+    return padding(ba, pad_byte, block_size).decode()

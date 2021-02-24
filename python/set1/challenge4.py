@@ -1,5 +1,5 @@
 from pathlib import Path
-from ..basics import from_hex, most_common, pretty_format, xor_single, calc_score
+from ..basics import from_hex, most_common, xor_single, calc_score
 
 
 def decrypt(secret):
@@ -9,7 +9,7 @@ def decrypt(secret):
     plain = xor_single(s, key)
     score = calc_score(plain)
     if score > 0.9:
-        return pretty_format(plain)
+        return plain.decode()
 
 
 def challenge4(lines):
