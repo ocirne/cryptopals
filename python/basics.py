@@ -45,8 +45,18 @@ def hamming_distance(s1: bytearray, s2: bytearray):
     return sum(bin(x ^ y).count('1') for x, y in zip(s1, s2))
 
 
-def padding(ba: bytes, pad_byte='\x00', block_size=16):
-    if len(ba) % block_size == 0:
-        return ba
+def padding(ba: bytes, block_size=16):
     pad_length = block_size - len(ba) % block_size
-    return ba + bytearray(pad_byte * pad_length, 'UTF-8')
+    if pad_length == 0:
+        pad_length = block_size
+    pad_byte = chr(pad_length)
+    return ba + bytes(pad_byte * pad_length, 'UTF-8')
+
+
+def strip_padding(plaintext: bytes):
+    c = plaintext[-1]
+    i = c
+    t, s = plaintext[:-i], plaintext[-i:]
+    if s == bytes([c] * len(s)) and t[-1] != c:
+        return t
+    return None
