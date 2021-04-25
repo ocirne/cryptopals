@@ -22,9 +22,9 @@ def encryption_oracle(attacker_controlled):
     return aes.encrypt(padding(random_prefix + attacker_controlled + target_bytes))
 
 
-def lookup(skip, inject_length, known_secret: bytearray, known_content: bytearray):
+def lookup(skip, inject_length, known_secret: bytes, known_content: bytes):
     for b in range(256):
-        secret = encryption_oracle((b"\x00" * inject_length) + known_content + bytearray([b]))
+        secret = encryption_oracle((b"\x00" * inject_length) + known_content + bytes([b]))
         if secret[skip:skip + BLOCK_SIZE] == known_secret[skip:skip + BLOCK_SIZE]:
             return b
 

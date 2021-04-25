@@ -16,16 +16,16 @@ SUFFIX = b'";comment2=%20like%20a%20pound%20of%20bacon"'
 def encrypt_c16(input_string):
     plain_text = PREFIX + quote_plus(input_string).encode() + SUFFIX
     aes = AES.new(KEY, AES.MODE_CBC, IV)
-    return bytearray(aes.encrypt(padding(plain_text)))
+    return bytes(aes.encrypt(padding(plain_text)))
 
 
-def decrypt_c16(ciphertext: bytearray):
+def decrypt_c16(ciphertext: bytes):
     aes = AES.new(KEY, AES.MODE_CBC, IV)
     plaintext = aes.decrypt(bytes(ciphertext))
     return plaintext
 
 
-def is_broken_c16(ciphertext: bytearray):
+def is_broken_c16(ciphertext: bytes):
     plaintext = decrypt_c16(ciphertext)
     return b';admin=true;' in plaintext
 
@@ -37,14 +37,14 @@ def chunks(content, block_size):
         i += block_size
 
 
-def modify(ciphertext):
+def modify(ciphertext: bytearray):
     for (i, (x, y)) in enumerate(zip('g%20MCs;user', ';admin=true;')):
         ciphertext[i] = ciphertext[i] ^ ord(x) ^ ord(y)
     return ciphertext
 
 
 ciphertext = encrypt_c16(';admin=true;')
-modified = modify(ciphertext[:])
+modified = modify(bytearray(ciphertext))
 
 print('----')
 plaintext = decrypt_c16(ciphertext)

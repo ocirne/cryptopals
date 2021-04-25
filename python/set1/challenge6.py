@@ -27,7 +27,7 @@ def cheap_factor(x):
 
 def read_file():
     with open(Path(__file__).parent / 'resources/6.txt') as f:
-        return bytearray(base64.b64decode(f.read()))
+        return bytes(base64.b64decode(f.read()))
 
 
 def get_common_distance(count_blocks=4):
@@ -61,13 +61,13 @@ def detect_key():
     'Terminator X: Bring the noise'
     """
     cipher = read_file()
-    key = bytearray(find_key(block) for block in transpose(cipher, 29))
+    key = bytes(find_key(block) for block in transpose(cipher, 29))
     return key.decode()
 
 
 def decrypt_text(key):
     cipher = read_file()
-    k = bytearray(key, 'UTF-8')
+    k = bytes(key, 'UTF-8')
     plain = xor_cycle(cipher, k)
     return plain.decode()
 

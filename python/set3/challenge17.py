@@ -27,7 +27,7 @@ IV = secrets.token_bytes(BLOCK_SIZE)
 def encrypt_c17():
     plain_text = random.choice(SECRETS)
     aes = AES.new(KEY, AES.MODE_CBC, IV)
-    return bytearray(aes.encrypt(padding(plain_text)))
+    return bytes(aes.encrypt(padding(plain_text)))
 
 
 def decrypt_c17(ciphertext):

@@ -48,9 +48,9 @@ def discover_mode():
     return 'ECB' if secret[16:32] == secret[32:48] else 'CBC'
 
 
-def lookup(i, known_secret: bytearray, known_content: bytearray):
+def lookup(i, known_secret: bytes, known_content: bytes):
     for b in range(256):
-        secret = encryption_oracle(b"\x00" * i + known_content + bytearray([b]))
+        secret = encryption_oracle(b"\x00" * i + known_content + bytes([b]))
         if secret[:160] == known_secret:
             return b
 
