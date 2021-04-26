@@ -1,3 +1,6 @@
+
+# see https://en.wikipedia.org/wiki/Padding_oracle_attack
+
 import random
 import secrets
 
@@ -26,15 +29,39 @@ IV = secrets.token_bytes(BLOCK_SIZE)
 
 def encrypt_c17():
     plain_text = random.choice(SECRETS)
+    print('target', plain_text[16:32])
     aes = AES.new(KEY, AES.MODE_CBC, IV)
     return bytes(aes.encrypt(padding(plain_text)))
 
 
-def decrypt_c17(ciphertext):
+def decrypt_c17(ciphertext: bytes):
     aes = AES.new(KEY, AES.MODE_CBC, IV)
-    plain_text = aes.decrypt(bytes(ciphertext))
+    plain_text = aes.decrypt(ciphertext)
     return strip_padding(plain_text)
 
 
+def modify(ciphertext: bytes, known: bytes, c: int):
+    ct = bytearray(ciphertext)
+    t = len(known) + 1
+    for i in range(t-1):
+        ct[15-i] = ct[15-i] ^ known[i] ^ t
+    ct[16-t] = ct[16-t] ^ c ^ t
+    return bytes(ct)
+
+todo gegencheck - vorlettzes padding checken
+Andere chunks decoden
+
+def decrypt(ciphertext: bytes):
+    known = bytearray()
+    for _ in range(16):
+        for c in range(256):
+            candidate = modify(ciphertext, known, c)
+            if decrypt_c17(candidate[:32]) is not None:
+                known.append(c)
+                break
+    return bytes(reversed(known))
+
+
 cookie = encrypt_c17()
-print(decrypt_c17(cookie))
+
+print('result', decrypt(cookie))
