@@ -57,6 +57,6 @@ def strip_padding(plaintext: bytes):
     c = plaintext[-1]
     i = c
     t, s = plaintext[:-i], plaintext[-i:]
-    if s == bytes([c] * len(s)) and t[-1] != c:
+    if s == bytes([c] * len(s)) and (not t or t[-1] != c):
         return t
     return None
