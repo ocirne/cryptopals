@@ -11,15 +11,15 @@ def challenge15(plaintext: bytes):
     >>> challenge15(b"ICE ICE BAB\x04\x04\x04\x04\x04")
     Traceback (most recent call last):
       ...
-    Exception: Invalid padding
+    basics.InvalidPaddingException: Invalid padding
     >>> challenge15(b"ICE ICE BABY\x05\x05\x05\x05")
     Traceback (most recent call last):
       ...
-    Exception: Invalid padding
+    basics.InvalidPaddingException: Invalid padding
     >>> challenge15(b"ICE ICE BABY\x01\x02\x03\x04")
     Traceback (most recent call last):
       ...
-    Exception: Invalid padding
+    basics.InvalidPaddingException: Invalid padding
     >>> challenge15(b'YELLOW SUBMARINE\\x04\\x04\\x04\\x04')
     b'YELLOW SUBMARINE'
     >>> challenge15(b'YELLOW SUBMARINE\\x02\\x02')
