@@ -1,5 +1,6 @@
 
 # see https://en.wikipedia.org/wiki/Padding_oracle_attack
+
 import base64
 import random
 import secrets
@@ -30,8 +31,7 @@ class Oracle17:
     IV = secrets.token_bytes(BLOCK_SIZE)
 
     def __init__(self):
-        # self.plain_text = base64.b64decode(random.choice(self.SECRETS))
-        self.plain_text = random.choice(self.SECRETS)
+        self.plain_text = base64.b64decode(random.choice(self.SECRETS))
 
     def encrypt(self):
         aes = AES.new(self.KEY, AES.MODE_CBC, self.IV)
@@ -53,9 +53,10 @@ def modify(chunk: bytes, known: bytes, block_end: int, c: int):
     return bytes(ct)
 
 
-def decrypt(ciphertext: bytes, nth: int, iv: bytes = None):
+def decrypt(oracle: Oracle17, ciphertext: bytes, nth: int, iv: bytes = None):
     known = bytearray()
-    for _ in range(16):
+    for _ in range(BLOCK_SIZE):
+        cc = []
         for c in range(256):
             try:
                 if nth == 1:
@@ -66,23 +67,30 @@ def decrypt(ciphertext: bytes, nth: int, iv: bytes = None):
                     oracle.decrypt(modified_ciphertext[:nth*BLOCK_SIZE])
             except InvalidPaddingException:
                 continue
-            known.append(c)
+            cc.append(c)
+        if len(cc) == 0:
             break
+        else:
+            # TODO Good enough for now: when multiple because of padding, the second is correct
+            known.append(cc[-1])
     return bytes(reversed(known))
 
-#todo gegencheck - vorletztes padding checken
+
+def challenge17():
+    """
+    >>> challenge17()
+    True
+    """
+    oracle = Oracle17()
+    cookie, iv = oracle.encrypt()
+    plain_chunks = decrypt(oracle, cookie, 1, iv)
+    nth = 2
+    while nth*BLOCK_SIZE <= len(cookie):
+        plain_chunks += decrypt(oracle, cookie, nth)
+        nth += 1
+    actual = strip_padding(plain_chunks)
+    return actual == oracle.plain_text
 
 
-oracle = Oracle17()
-
-cookie, iv = oracle.encrypt()
-
-print('123456', oracle.plain_text)
-
-foo = decrypt(cookie, 1, iv)
-nth = 2
-while nth*BLOCK_SIZE <= len(cookie):
-    foo += decrypt(cookie, nth)
-    nth += 1
-
-print('result',  foo)
+if __name__ == '__main__':
+    challenge17()
