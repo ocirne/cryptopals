@@ -1,6 +1,6 @@
 
 # see https://en.wikipedia.org/wiki/Padding_oracle_attack
-
+import base64
 import random
 import secrets
 
@@ -29,22 +29,21 @@ class Oracle17:
     KEY = secrets.token_bytes(BLOCK_SIZE)
     IV = secrets.token_bytes(BLOCK_SIZE)
 
-    def encrypt(self):
-        plain_text = random.choice(self.SECRETS)
-        print('target', plain_text)
-        aes = AES.new(self.KEY, AES.MODE_CBC, self.IV)
-        return bytes(aes.encrypt(padding(plain_text))), self.IV
+    def __init__(self):
+        # self.plain_text = base64.b64decode(random.choice(self.SECRETS))
+        self.plain_text = random.choice(self.SECRETS)
 
-    def decrypt(self, ciphertext: bytes, iv: bytes = None):
-        if iv is None:
-            iv = self.IV
-    #    print(ciphertext, len(ciphertext), iv, len(iv))
+    def encrypt(self):
+        aes = AES.new(self.KEY, AES.MODE_CBC, self.IV)
+        return bytes(aes.encrypt(padding(self.plain_text))), self.IV
+
+    def decrypt(self, ciphertext: bytes, iv: bytes = IV):
         aes = AES.new(self.KEY, AES.MODE_CBC, iv)
         plain_text = aes.decrypt(ciphertext)
-    #    print(plain_text, len(plain_text))
         return strip_padding(plain_text)
 
 
+# TODO refactor, only one bytes changes
 def modify(chunk: bytes, known: bytes, block_end: int, c: int):
     ct = bytearray(chunk)
     t = len(known) + 1
@@ -52,8 +51,6 @@ def modify(chunk: bytes, known: bytes, block_end: int, c: int):
         ct[block_end - 1 - i] = ct[block_end - 1 - i] ^ known[i] ^ t
     ct[block_end - t] = ct[block_end - t] ^ c ^ t
     return bytes(ct)
-
-TODO modify entschlacken
 
 
 def decrypt(ciphertext: bytes, nth: int, iv: bytes = None):
@@ -80,4 +77,12 @@ oracle = Oracle17()
 
 cookie, iv = oracle.encrypt()
 
-print('result', decrypt(cookie, 1, iv) + decrypt(cookie, 2) + decrypt(cookie, 3) + decrypt(cookie, 4) + decrypt(cookie, 5))
+print('123456', oracle.plain_text)
+
+foo = decrypt(cookie, 1, iv)
+nth = 2
+while nth*BLOCK_SIZE <= len(cookie):
+    foo += decrypt(cookie, nth)
+    nth += 1
+
+print('result',  foo)
