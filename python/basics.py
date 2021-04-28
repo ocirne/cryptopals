@@ -53,10 +53,14 @@ def padding(ba: bytes, block_size=16):
     return ba + bytes(pad_byte * pad_length, 'UTF-8')
 
 
+class InvalidPaddingException(Exception):
+    pass
+
+
 def strip_padding(plaintext: bytes):
     c = plaintext[-1]
     i = c
     t, s = plaintext[:-i], plaintext[-i:]
     if s == bytes([c] * len(s)) and (not t or t[-1] != c):
         return t
-    return None
+    raise InvalidPaddingException('Invalid padding')
