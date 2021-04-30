@@ -3,26 +3,23 @@
 
 class MersenneTwister:
 
-    N = 624
-    f = 1812433253
     M = 1 << 31
 
     def __init__(self, seed):
         self.y = []
         x = seed
         self.y.append(x)
-        for i in range(1, self.N):
-            x = (self.f * (x ^ (x >> 30)) + i) & 0xFFFFFFFF
+        for i in range(1, 624):
+            x = (1812433253 * (x ^ (x >> 30)) + i) & 0xFFFFFFFF
             self.y.append(x)
-        self.i = self.N
 
-    def base_generator(self, count):
+    def vector_generator(self, count):
         for _ in range(count):
-            h = self.y[self.i-self.N] - (self.y[self.i-self.N] % self.M) + (self.y[self.i-self.N+1] % self.M)
-            v = self.y[self.i-227] ^ (h >> 1) ^ ((h & 1) * 0x9908B0DF)
+            h = self.y[0] - (self.y[0] % self.M) + (self.y[1] % self.M)
+            v = self.y[397] ^ (h >> 1) ^ ((h & 1) * 0x9908B0DF)
             self.y.append(v)
-            yield self.y[self.i]
-            self.i += 1
+            self.y.pop(0)
+            yield v
 
     @staticmethod
     def tempering(p):
@@ -33,8 +30,8 @@ class MersenneTwister:
         return e ^ (e >> 18)
 
     def next(self, count=1):
-        for n in self.base_generator(count):
-            yield self.tempering(n)
+        for raw in self.vector_generator(count):
+            yield self.tempering(raw)
 
 
 def challenge21(seed):
@@ -59,4 +56,4 @@ def challenge21(seed):
 
 
 if __name__ == '__main__':
-    challenge21(0)
+    challenge21(1131464071)
