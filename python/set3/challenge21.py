@@ -29,9 +29,13 @@ class MersenneTwister:
         e ^= (e << 15) & 0xEFC60000
         return e ^ (e >> 18)
 
-    def next(self, count=1):
+    def generate(self, count=1):
         for raw in self.vector_generator(count):
             yield self.tempering(raw)
+
+    def next(self):
+        raw = next(self.vector_generator(1))
+        return self.tempering(raw)
 
 
 def challenge21(seed):
@@ -49,10 +53,12 @@ def challenge21(seed):
     502890592
     3431775349
     1040222146
+    3582980688
     """
     mt = MersenneTwister(seed)
-    for pr in mt.next(10):
+    for pr in mt.generate(10):
         print(pr)
+    print(mt.next())
 
 
 if __name__ == '__main__':
