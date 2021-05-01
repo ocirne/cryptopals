@@ -10,13 +10,13 @@ class MersenneTwister:
         x = seed
         self.y.append(x)
         for i in range(1, 624):
-            x = (1812433253 * (x ^ (x >> 30)) + i) & 0xFFFFFFFF
+            x = (1812433253 * (x ^ (x >> 30)) + i) & 0xFFFF_FFFF
             self.y.append(x)
 
     def vector_generator(self, count):
         for _ in range(count):
             h = self.y[0] - (self.y[0] % self.M) + (self.y[1] % self.M)
-            v = self.y[397] ^ (h >> 1) ^ ((h & 1) * 0x9908B0DF)
+            v = self.y[397] ^ (h >> 1) ^ ((h & 1) * 0x9908_B0DF)
             self.y.append(v)
             self.y.pop(0)
             yield v
@@ -25,8 +25,8 @@ class MersenneTwister:
     def tempering(p):
         e = p
         e ^= (e >> 11)
-        e ^= (e << 7) & 0x9D2C5680
-        e ^= (e << 15) & 0xEFC60000
+        e ^= (e << 7) & 0x9D2C_5680
+        e ^= (e << 15) & 0xEFC6_0000
         return e ^ (e >> 18)
 
     def generate(self, count=1):
