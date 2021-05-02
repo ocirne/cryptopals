@@ -1,7 +1,7 @@
 from itertools import combinations
 from pathlib import Path
 
-from ..basics import from_hex
+from basics import from_hex
 
 
 def detect_collision(line):

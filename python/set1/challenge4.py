@@ -1,5 +1,5 @@
 from pathlib import Path
-from ..basics import from_hex, most_common, xor_single, calc_score
+from basics import from_hex, most_common, xor_single, calc_score
 
 
 def decrypt(secret):

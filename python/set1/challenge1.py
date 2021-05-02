@@ -1,5 +1,5 @@
 import base64
-from ..basics import from_hex
+from basics import from_hex
 
 
 def hex_to_base64(hex_string):

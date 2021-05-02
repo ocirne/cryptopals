@@ -1,4 +1,4 @@
-from ..basics import from_hex, xor
+from basics import from_hex, xor
 
 
 def fixed_xor(text, secret):

@@ -1,4 +1,4 @@
-from ..basics import from_hex, most_common, xor_single
+from basics import from_hex, most_common, xor_single
 
 
 def challenge3(secret):

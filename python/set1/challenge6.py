@@ -3,7 +3,7 @@ from itertools import combinations
 from collections import Counter
 from pathlib import Path
 from statistics import mean
-from ..basics import hamming_distance, most_common, xor_cycle
+from basics import hamming_distance, most_common, xor_cycle
 
 
 def cheap_factor(x):

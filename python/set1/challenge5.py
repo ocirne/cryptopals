@@ -1,4 +1,4 @@
-from ..basics import xor_cycle
+from basics import xor_cycle
 
 
 def challenge5(plain, key):
