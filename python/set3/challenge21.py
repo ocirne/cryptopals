@@ -6,9 +6,6 @@ class MersenneTwister:
     M = 1 << 31
 
     def __init__(self, seed):
-        self.seed(seed)
-
-    def seed(self, seed):
         self.y = []
         x = seed
         self.y.append(x)
