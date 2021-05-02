@@ -54,7 +54,7 @@ def padding(ba: bytes, block_size=16):
 
 
 class InvalidPaddingException(Exception):
-    pass
+    ...
 
 
 def strip_padding(plaintext: bytes):
