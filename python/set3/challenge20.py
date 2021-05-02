@@ -2,15 +2,13 @@ import base64
 import secrets
 from pathlib import Path
 
-from basics import xor
 from Crypto.Cipher import AES
 from Crypto.Util import Counter as AesCounter
 
-NUM = 37
-PLAIN = b'He, too, has been changed in his turn,'
+from basics import xor, calc_score, xor_single
 
 
-class Oracle19:
+class Oracle20:
     KEY = secrets.token_bytes(16)
 
     def aes_ctr(self):
@@ -24,14 +22,24 @@ class Oracle19:
         return [self.encrypt(base64.b64decode(line)) for line in lines]
 
 
-def challenge19():
-    oracle = Oracle19()
-    f = open(Path(__file__).parent / 'resources/19.txt')
+def columns(ciphertexts: [bytes]):
+    size = min(len(line) for line in ciphertexts)
+    for col_no in range(size):
+        yield [line[col_no] for line in ciphertexts]
+
+
+def find_key(column):
+    return max(((calc_score(xor_single(column, k)), k) for k in range(256)))[1]
+
+
+def challenge20():
+    oracle = Oracle20()
+    f = open(Path(__file__).parent / 'resources/20.txt')
     cipher_texts = oracle.encrypt_lines(f)
-    key = xor(PLAIN, cipher_texts[NUM])
-    for index, ct in enumerate(cipher_texts):
-        print(index, xor(ct, key))
+    key = bytes(find_key(column) for column in columns(cipher_texts))
+    for line in cipher_texts:
+        print(xor(key, line))
 
 
 if __name__ == '__main__':
-    challenge19()
+    challenge20()
