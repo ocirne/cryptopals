@@ -53,4 +53,4 @@ mod_plaintext = decrypt_c16(modified)
 for chunk, mod_chunk in zip(chunks(plaintext, BLOCK_SIZE), chunks(mod_plaintext, BLOCK_SIZE)):
     print("%s    %s\n%s    %s\n" % (chunk.hex(), chunk, mod_chunk.hex(), mod_chunk))
 
-assert is_broken_c16(modified) is True
+assert is_broken_c16(modified)
