@@ -56,19 +56,14 @@ class Challenge28 {
 
     fun sha1(message: String): String {
         val preprocessedMessage = preprocess(message)
-//        println(encodeHexString(preprocessedMessage))
         // Process the message in successive 512-bit chunks:
         preprocessedMessage.asIterable().chunked(64).forEach { chunk ->
             // break chunk into sixteen 32-bit big-endian words w[i], 0 ≤ i ≤ 15
             val w = chunk.chunked(4).map { fourBytes -> fourBytes.concatToUInt() }.toUIntArray().toMutableList()
-
-            assert (w.size == 16)
-
             // Message schedule: extend the sixteen 32-bit words into eighty 32-bit words:
             IntRange(16, 79).forEach { i ->
                 w += (w[i - 3] xor w[i - 8] xor w[i - 14] xor w[i - 16]).rotateLeft(1)
             }
-            println(w)
             // Initialize hash value for this chunk:
             var a = h0
             var b = h1
