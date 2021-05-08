@@ -31,7 +31,7 @@ internal class Challenge28Test {
                 "84983e441c3bd26ebaae4aa1f95129e5e54670f1"
         Challenge28().sha1("abcdefghbcdefghicdefghijdefghijkefghijklfghijklmghijklmnhijklmnoijklmnopjklmnopqklmnopqrlmnopqrsmnopqrstnopqrstu") shouldBe
                 "a49b2446a02c645bf419f995b67091253a04a259"
-        Challenge28().sha1("a * 1_000_000") shouldBe
+        Challenge28().sha1("a".repeat(1_000_000)) shouldBe
                 "34aa973cd4c4daa4f61eeb2bdbad27316534016f"
     }
 }

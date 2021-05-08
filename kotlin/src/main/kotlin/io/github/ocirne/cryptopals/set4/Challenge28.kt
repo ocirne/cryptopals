@@ -19,35 +19,35 @@ class Challenge28 {
     private var h3 = 0x10325476u
     private var h4 = 0xC3D2E1F0u
 
-    private fun List<Byte>.concatToUInt(): UInt =
+    private fun List<UByte>.concatToUInt(): UInt =
         (this[0].toUInt() shl 24) or (this[1].toUInt() shl 16) or (this[2].toUInt() shl 8) or this[3].toUInt()
 
-    private fun UInt.splitToBytes(): ByteArray =
-        byteArrayOf(
-            (this shr 24).toByte(),
-            (this shr 16).toByte(),
-            (this shr 8).toByte(),
-            this.toByte())
+    private fun UInt.splitToBytes(): UByteArray =
+        ubyteArrayOf(
+            (this shr 24).toUByte(),
+            (this shr 16).toUByte(),
+            (this shr 8).toUByte(),
+            this.toUByte())
 
-    private fun ULong.splitToBytes(): ByteArray =
-        byteArrayOf(
-            (this shr 56).toByte(),
-            (this shr 48).toByte(),
-            (this shr 40).toByte(),
-            (this shr 32).toByte(),
-            (this shr 24).toByte(),
-            (this shr 16).toByte(),
-            (this shr 8).toByte(),
-            this.toByte())
+    private fun ULong.splitToBytes(): UByteArray =
+        ubyteArrayOf(
+            (this shr 56).toUByte(),
+            (this shr 48).toUByte(),
+            (this shr 40).toUByte(),
+            (this shr 32).toUByte(),
+            (this shr 24).toUByte(),
+            (this shr 16).toUByte(),
+            (this shr 8).toUByte(),
+            this.toUByte())
 
-    private fun preprocess(message: String): ByteArray {
-        var msg = message.toByteArray()
+    private fun preprocess(message: String): UByteArray {
+        var msg = message.toByteArray().toUByteArray()
         // ml = message length in bits, 64 bit quantity
         val ml = msg.size.toULong() * 8u
         // append the bit '1' to the message e.g. by adding 0x80 if message length is a multiple of 8 bits.
-        msg += 0x80.toByte()
+        msg += 0x80.toUByte()
         // append 0 ≤ k < 512 bits '0', such that the resulting message length in bits is congruent to −64 ≡ 448 (mod 512)
-        msg += "\u0000".repeat((((448u - (ml + 8u) % 512u) % 512u) / 8u).toInt()).toByteArray()
+        msg += "\u0000".repeat((((448u - (ml + 8u) % 512u) % 512u) / 8u).toInt()).toByteArray().toUByteArray()
         // append ml, the original message length, as a 64-bit big-endian integer. Thus, the total length is a multiple of 512 bits.
         // ml - 64 bit
         msg += ml.splitToBytes()
@@ -55,8 +55,8 @@ class Challenge28 {
     }
 
     fun sha1(message: String): String {
-        println(h0)
         val preprocessedMessage = preprocess(message)
+//        println(encodeHexString(preprocessedMessage))
         // Process the message in successive 512-bit chunks:
         preprocessedMessage.asIterable().chunked(64).forEach { chunk ->
             // break chunk into sixteen 32-bit big-endian words w[i], 0 ≤ i ≤ 15
@@ -68,6 +68,7 @@ class Challenge28 {
             IntRange(16, 79).forEach { i ->
                 w += (w[i - 3] xor w[i - 8] xor w[i - 14] xor w[i - 16]).rotateLeft(1)
             }
+            println(w)
             // Initialize hash value for this chunk:
             var a = h0
             var b = h1
@@ -97,7 +98,7 @@ class Challenge28 {
                     }
                     else -> throw IllegalStateException()
                 }
-                val temp = (a.rotateLeft(5) + f + e + k + w[i])
+                val temp = a.rotateLeft(5) + f + e + k + w[i]
                 e = d
                 d = c
                 c = b.rotateLeft(30)
@@ -112,6 +113,6 @@ class Challenge28 {
             h4 += e
         }
         // Produce the final hash value (big-endian) as a 160-bit number:
-        return encodeHexString(h0.splitToBytes() + h1.splitToBytes() + h2.splitToBytes() + h3.splitToBytes() + h4.splitToBytes())
+        return encodeHexString((h0.splitToBytes() + h1.splitToBytes() + h2.splitToBytes() + h3.splitToBytes() + h4.splitToBytes()).asByteArray())
     }
 }
