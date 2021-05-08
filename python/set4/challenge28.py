@@ -1,5 +1,7 @@
 import struct
 
+MASK = 0xFFFF_FFFF
+
 
 def chunks(message: bytes):
     i = 0
@@ -9,7 +11,7 @@ def chunks(message: bytes):
 
 
 def left_rotate(w, r):
-    return ((w << r) | (w >> (32 - r))) % 2**32
+    return ((w << r) | (w >> (32 - r))) & MASK
 
 
 def word(w: bytes):
@@ -36,8 +38,6 @@ class SHA1Digest:
     >>> SHA1Digest().sha1_hex(b"a" * 1_000_000)
     '34aa973cd4c4daa4f61eeb2bdbad27316534016f'
     """
-
-    MASK = 0xFFFF_FFFF
 
     def __init__(self):
         # Initialize variables:
@@ -96,7 +96,7 @@ class SHA1Digest:
                 else:
                     raise
 
-                temp = (left_rotate(a, 5) + f + e + k + w[i]) & self.MASK
+                temp = (left_rotate(a, 5) + f + e + k + w[i]) & MASK
                 e = d
                 d = c
                 c = left_rotate(b, 30)
@@ -104,11 +104,11 @@ class SHA1Digest:
                 a = temp
         
             # Add this chunk's hash to result so far:
-            self.h0 = (self.h0 + a) & self.MASK
-            self.h1 = (self.h1 + b) & self.MASK
-            self.h2 = (self.h2 + c) & self.MASK
-            self.h3 = (self.h3 + d) & self.MASK
-            self.h4 = (self.h4 + e) & self.MASK
+            self.h0 = (self.h0 + a) & MASK
+            self.h1 = (self.h1 + b) & MASK
+            self.h2 = (self.h2 + c) & MASK
+            self.h3 = (self.h3 + d) & MASK
+            self.h4 = (self.h4 + e) & MASK
 
         # Produce the final hash value (big-endian) as a 160-bit number:
         hh = (self.h0 << 128) | (self.h1 << 96) | (self.h2 << 64) | (self.h3 << 32) | self.h4
