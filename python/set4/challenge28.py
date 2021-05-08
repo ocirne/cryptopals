@@ -18,34 +18,27 @@ def word(w: bytes):
     return struct.unpack(b'>I', w)[0]
 
 
-class SHA1Digest:
+class SHA1:
     """
     see https://en.wikipedia.org/wiki/SHA-1
     see https://www.di-mgt.com.au/sha_testvectors.html
 
-    >>> SHA1Digest().sha1_hex(b"")
+    >>> sha1 = SHA1()
+    >>> sha1.digest(b"")
     'da39a3ee5e6b4b0d3255bfef95601890afd80709'
-    >>> SHA1Digest().sha1_hex(b"The quick brown fox jumps over the lazy dog")
+    >>> sha1.digest(b"The quick brown fox jumps over the lazy dog")
     '2fd4e1c67a2d28fced849ee1bb76e7391b93eb12'
-    >>> SHA1Digest().sha1_hex(b"The quick brown fox jumps over the lazy cog")
+    >>> sha1.digest(b"The quick brown fox jumps over the lazy cog")
     'de9f2c7fd25e1b3afad3e85a0bd17d9b100db4b3'
-    >>> SHA1Digest().sha1_hex(b"abc")
+    >>> sha1.digest(b"abc")
     'a9993e364706816aba3e25717850c26c9cd0d89d'
-    >>> SHA1Digest().sha1_hex(b"abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq")
+    >>> sha1.digest(b"abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq")
     '84983e441c3bd26ebaae4aa1f95129e5e54670f1'
-    >>> SHA1Digest().sha1_hex(b"abcdefghbcdefghicdefghijdefghijkefghijklfghijklmghijklmnhijklmnoijklmnopjklmnopqklmnopqrlmnopqrsmnopqrstnopqrstu")
+    >>> sha1.digest(b"abcdefghbcdefghicdefghijdefghijkefghijklfghijklmghijklmnhijklmnoijklmnopjklmnopqklmnopqrlmnopqrsmnopqrstnopqrstu")
     'a49b2446a02c645bf419f995b67091253a04a259'
-    >>> SHA1Digest().sha1_hex(b"a" * 1_000_000)
+    >>> sha1.digest(b"a" * 1_000_000)
     '34aa973cd4c4daa4f61eeb2bdbad27316534016f'
     """
-
-    def __init__(self):
-        # Initialize variables:
-        self.h0 = 0x67452301
-        self.h1 = 0xEFCDAB89
-        self.h2 = 0x98BADCFE
-        self.h3 = 0x10325476
-        self.h4 = 0xC3D2E1F0
 
     @staticmethod
     def preprocess(message: bytes):
@@ -60,7 +53,14 @@ class SHA1Digest:
         msg += struct.pack(b'>Q', ml)
         return bytes(msg)
 
-    def sha1(self, message: bytes):
+    def digest(self, message: bytes):
+        # Initialize variables:
+        h0 = 0x67452301
+        h1 = 0xEFCDAB89
+        h2 = 0x98BADCFE
+        h3 = 0x10325476
+        h4 = 0xC3D2E1F0
+
         preprocessed_message = self.preprocess(message)
         # Process the message in successive 512-bit chunks:
         for chunk in chunks(preprocessed_message):
@@ -72,11 +72,11 @@ class SHA1Digest:
                 w.append(left_rotate(w[i-3] ^ w[i-8] ^ w[i-14] ^ w[i-16], 1))
         
             # Initialize hash value for this chunk:
-            a = self.h0
-            b = self.h1
-            c = self.h2
-            d = self.h3
-            e = self.h4
+            a = h0
+            b = h1
+            c = h2
+            d = h3
+            e = h4
         
             # Main loop:[3][57]
             for i in range(80):
@@ -104,24 +104,20 @@ class SHA1Digest:
                 a = temp
         
             # Add this chunk's hash to result so far:
-            self.h0 = (self.h0 + a) & MASK
-            self.h1 = (self.h1 + b) & MASK
-            self.h2 = (self.h2 + c) & MASK
-            self.h3 = (self.h3 + d) & MASK
-            self.h4 = (self.h4 + e) & MASK
+            h0 = (h0 + a) & MASK
+            h1 = (h1 + b) & MASK
+            h2 = (h2 + c) & MASK
+            h3 = (h3 + d) & MASK
+            h4 = (h4 + e) & MASK
 
         # Produce the final hash value (big-endian) as a 160-bit number:
-        hh = (self.h0 << 128) | (self.h1 << 96) | (self.h2 << 64) | (self.h3 << 32) | self.h4
-        return hh
-
-    def sha1_hex(self, message):
-        digest = self.sha1(message)
-        return hex(digest)[2:]
+        hh = (h0 << 128) | (h1 << 96) | (h2 << 64) | (h3 << 32) | h4
+        return hex(hh)[2:]
 
 
 def challenge28():
-    digest = SHA1Digest()
-    print(digest.sha1_hex(b''))
+    sha1 = SHA1()
+    print(sha1.digest(b''))
 
 
 if __name__ == '__main__':
