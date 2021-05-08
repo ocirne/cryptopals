@@ -1,0 +1,117 @@
+import struct
+
+
+def chunks(message: bytes):
+    i = 0
+    while i < len(message):
+        yield message[i:i + 64]
+        i += 64
+
+
+def left_rotate(w, r):
+    return ((w << r) | (w >> (32 - r))) % 2**32
+
+
+def word(w: bytes):
+    return struct.unpack(b'>I', w)[0]
+
+
+class SHA1Digest:
+    """
+    see https://en.wikipedia.org/wiki/SHA-1
+
+    >>> SHA1Digest().sha1_hex(b"")
+    'da39a3ee5e6b4b0d3255bfef95601890afd80709'
+    >>> SHA1Digest().sha1_hex(b"The quick brown fox jumps over the lazy dog")
+    '2fd4e1c67a2d28fced849ee1bb76e7391b93eb12'
+    >>> SHA1Digest().sha1_hex(b"The quick brown fox jumps over the lazy cog")
+    'de9f2c7fd25e1b3afad3e85a0bd17d9b100db4b3'
+    """
+
+    def __init__(self):
+        # Initialize variables:
+        self.h0 = 0x67452301
+        self.h1 = 0xEFCDAB89
+        self.h2 = 0x98BADCFE
+        self.h3 = 0x10325476
+        self.h4 = 0xC3D2E1F0
+
+    @staticmethod
+    def preprocess(message: bytes):
+        msg = bytearray(message)
+        # ml = message length in bits, 64 bit quantity
+        ml = len(msg) * 8
+        # append the bit '1' to the message e.g. by adding 0x80 if message length is a multiple of 8 bits.
+        msg += b'\x80'
+        # append 0 ≤ k < 512 bits '0', such that the resulting message length in bits is congruent to −64 ≡ 448 (mod 512)
+        msg += b'\x00' * (((448 - (ml + 8) % 512) % 512) // 8)
+        # append ml, the original message length, as a 64-bit big-endian integer. Thus, the total length is a multiple of 512 bits.
+        msg += struct.pack(b'>Q', ml)
+        return bytes(msg)
+
+    def sha1(self, message: bytes):
+        preprocessed_message = self.preprocess(message)
+        # Process the message in successive 512-bit chunks:
+        for chunk in chunks(preprocessed_message):
+            # break chunk into sixteen 32-bit big-endian words w[i], 0 ≤ i ≤ 15
+            w = [word(chunk[i:i+4]) for i in range(0, 64, 4)]
+
+            # Message schedule: extend the sixteen 32-bit words into eighty 32-bit words:
+            for i in range(16, 80):
+                w.append(left_rotate(w[i-3] ^ w[i-8] ^ w[i-14] ^ w[i-16], 1))
+        
+            # Initialize hash value for this chunk:
+            a = self.h0
+            b = self.h1
+            c = self.h2
+            d = self.h3
+            e = self.h4
+        
+            # Main loop:[3][57]
+            for i in range(80):
+                if 0 <= i <= 19:
+                    # f = (b & c) | ((~b) & d)
+                    f = d ^ (b & (c ^ d))
+                    k = 0x5A827999
+                elif 20 <= i <= 39:
+                    f = b ^ c ^ d
+                    k = 0x6ED9EBA1
+                elif 40 <= i <= 59:
+                    f = (b & c) | (b & d) | (c & d)
+                    k = 0x8F1BBCDC
+                elif 60 <= i <= 79:
+                    f = b ^ c ^ d
+                    k = 0xCA62C1D6
+                else:
+                    raise
+
+                temp = (left_rotate(a, 5) + f + e + k + w[i]) % 2**32
+                e = d
+                d = c
+                c = left_rotate(b, 30)
+                b = a
+                a = temp
+        
+            # Add this chunk's hash to result so far:
+            self.h0 = (self.h0 + a) % (2**32)
+            self.h1 = (self.h1 + b) % (2**32)
+            self.h2 = (self.h2 + c) % (2**32)
+            self.h3 = (self.h3 + d) % (2**32)
+            self.h4 = (self.h4 + e) % (2**32)
+
+        # Produce the final hash value (big-endian) as a 160-bit number:
+        hh = (self.h0 << 128) | (self.h1 << 96) | (self.h2 << 64) | (self.h3 << 32) | self.h4
+        return hh
+
+    def sha1_hex(self, message):
+        digest = self.sha1(message)
+        return hex(digest)[2:]
+
+
+def challenge28():
+    digest = SHA1Digest()
+    print(digest.sha1_hex(b''))
+
+
+if __name__ == '__main__':
+    challenge28()
