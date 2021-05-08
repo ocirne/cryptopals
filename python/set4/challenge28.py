@@ -19,6 +19,7 @@ def word(w: bytes):
 class SHA1Digest:
     """
     see https://en.wikipedia.org/wiki/SHA-1
+    see https://www.di-mgt.com.au/sha_testvectors.html
 
     >>> SHA1Digest().sha1_hex(b"")
     'da39a3ee5e6b4b0d3255bfef95601890afd80709'
@@ -26,7 +27,17 @@ class SHA1Digest:
     '2fd4e1c67a2d28fced849ee1bb76e7391b93eb12'
     >>> SHA1Digest().sha1_hex(b"The quick brown fox jumps over the lazy cog")
     'de9f2c7fd25e1b3afad3e85a0bd17d9b100db4b3'
+    >>> SHA1Digest().sha1_hex(b"abc")
+    'a9993e364706816aba3e25717850c26c9cd0d89d'
+    >>> SHA1Digest().sha1_hex(b"abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq")
+    '84983e441c3bd26ebaae4aa1f95129e5e54670f1'
+    >>> SHA1Digest().sha1_hex(b"abcdefghbcdefghicdefghijdefghijkefghijklfghijklmghijklmnhijklmnoijklmnopjklmnopqklmnopqrlmnopqrsmnopqrstnopqrstu")
+    'a49b2446a02c645bf419f995b67091253a04a259'
+    >>> SHA1Digest().sha1_hex(b"a" * 1_000_000)
+    '34aa973cd4c4daa4f61eeb2bdbad27316534016f'
     """
+
+    MASK = 0xFFFF_FFFF
 
     def __init__(self):
         # Initialize variables:
@@ -70,7 +81,7 @@ class SHA1Digest:
             # Main loop:[3][57]
             for i in range(80):
                 if 0 <= i <= 19:
-                    # f = (b & c) | ((~b) & d)
+                    # variant 1 to avoid not
                     f = d ^ (b & (c ^ d))
                     k = 0x5A827999
                 elif 20 <= i <= 39:
@@ -85,7 +96,7 @@ class SHA1Digest:
                 else:
                     raise
 
-                temp = (left_rotate(a, 5) + f + e + k + w[i]) % 2**32
+                temp = (left_rotate(a, 5) + f + e + k + w[i]) & self.MASK
                 e = d
                 d = c
                 c = left_rotate(b, 30)
@@ -93,11 +104,11 @@ class SHA1Digest:
                 a = temp
         
             # Add this chunk's hash to result so far:
-            self.h0 = (self.h0 + a) % (2**32)
-            self.h1 = (self.h1 + b) % (2**32)
-            self.h2 = (self.h2 + c) % (2**32)
-            self.h3 = (self.h3 + d) % (2**32)
-            self.h4 = (self.h4 + e) % (2**32)
+            self.h0 = (self.h0 + a) & self.MASK
+            self.h1 = (self.h1 + b) & self.MASK
+            self.h2 = (self.h2 + c) & self.MASK
+            self.h3 = (self.h3 + d) & self.MASK
+            self.h4 = (self.h4 + e) & self.MASK
 
         # Produce the final hash value (big-endian) as a 160-bit number:
         hh = (self.h0 << 128) | (self.h1 << 96) | (self.h2 << 64) | (self.h3 << 32) | self.h4
