@@ -1,3 +1,4 @@
+import secrets
 import struct
 
 MASK = 0xFFFF_FFFF
@@ -115,9 +116,37 @@ class SHA1:
         return hex(hh)[2:]
 
 
-def challenge28():
+def authenticateMac(key: bytes, message: bytes):
     sha1 = SHA1()
-    print(sha1.digest(b''))
+    return sha1.digest(key + message)
+
+
+def msg_replace(message: bytes, index: int, b: int):
+    msg = bytearray(message)
+    msg[index] = b
+    return bytes(msg)
+
+
+def msg_append(message: bytes, b: int):
+    return message + bytes([b])
+
+
+def challenge28():
+    key = secrets.token_bytes(16)
+    message = b"Ice Ice Baby"
+    mac = authenticateMac(key, message)
+
+    # Tampering 1: Replace char
+    for b in range(0, 256):
+        if b == message[0]:
+            continue
+        tampered_mac = authenticateMac(key, msg_replace(message, 0, b))
+        assert tampered_mac != mac
+
+    # Tampering 2: Append char
+    for b in range(1, 256):
+        tampered_mac = authenticateMac(key, msg_append(message, b))
+        assert tampered_mac != mac
 
 
 if __name__ == '__main__':
