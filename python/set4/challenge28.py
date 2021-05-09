@@ -16,7 +16,8 @@ def left_rotate(w, r):
 
 
 def word(w: bytes):
-    return struct.unpack(b'>I', w)[0]
+    return int.from_bytes(w, byteorder='big', signed=False)
+#    return struct.unpack(b'>I', w)[0]
 
 
 class SHA1:
