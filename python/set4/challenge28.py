@@ -1,5 +1,4 @@
 import secrets
-import struct
 
 MASK = 0xFFFF_FFFF
 
@@ -17,7 +16,6 @@ def left_rotate(w, r):
 
 def word(w: bytes):
     return int.from_bytes(w, byteorder='big', signed=False)
-#    return struct.unpack(b'>I', w)[0]
 
 
 class SHA1:
@@ -50,7 +48,7 @@ class SHA1:
         # append 0 ≤ k < 512 bits '0', such that the resulting message length in bits is congruent to −64 ≡ 448 (mod 512)
         padding += b'\x00' * (((448 - (ml + 8) % 512) % 512) // 8)
         # append ml, the original message length, as a 64-bit big-endian integer. Thus, the total length is a multiple of 512 bits.
-        padding += struct.pack(b'>Q', ml)
+        padding += (ml & 0xFFFFFFFFFFFFFFFF).to_bytes(8, byteorder='big')
         return bytes(padding)
 
     def _preprocess(self, message: bytes):
