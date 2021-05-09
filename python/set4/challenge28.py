@@ -41,10 +41,9 @@ class SHA1:
     '34aa973cd4c4daa4f61eeb2bdbad27316534016f'
     """
 
-    @staticmethod
-    def _padding(message: bytes):
+    def padding(self, message: bytes):
         # ml = message length in bits, 64 bit quantity
-        ml = len(message) * 8
+        ml = (len(message) + self.pa) * 8
         # append the bit '1' to the message e.g. by adding 0x80 if message length is a multiple of 8 bits.
         padding = b'\x80'
         # append 0 ≤ k < 512 bits '0', such that the resulting message length in bits is congruent to −64 ≡ 448 (mod 512)
@@ -54,15 +53,16 @@ class SHA1:
         return bytes(padding)
 
     def _preprocess(self, message: bytes):
-        return message + self._padding(message)
+        return message + self.padding(message)
 
-    def __init__(self, i0=0x67452301, i1=0xEFCDAB89, i2=0x98BADCFE, i3=0x10325476, i4=0xC3D2E1F0):
+    def __init__(self, i0=0x67452301, i1=0xEFCDAB89, i2=0x98BADCFE, i3=0x10325476, i4=0xC3D2E1F0, pa=0):
         """ Overwrite initialization variables for challenge 29 """
         self.i0 = i0
         self.i1 = i1
         self.i2 = i2
         self.i3 = i3
         self.i4 = i4
+        self.pa = pa
 
     def digest(self, message: bytes):
         # Initialize variables:
