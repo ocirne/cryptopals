@@ -42,27 +42,37 @@ class SHA1:
     """
 
     @staticmethod
-    def preprocess(message: bytes):
-        msg = bytearray(message)
+    def _padding(message: bytes):
         # ml = message length in bits, 64 bit quantity
-        ml = len(msg) * 8
+        ml = len(message) * 8
         # append the bit '1' to the message e.g. by adding 0x80 if message length is a multiple of 8 bits.
-        msg += b'\x80'
+        padding = b'\x80'
         # append 0 ≤ k < 512 bits '0', such that the resulting message length in bits is congruent to −64 ≡ 448 (mod 512)
-        msg += b'\x00' * (((448 - (ml + 8) % 512) % 512) // 8)
+        padding += b'\x00' * (((448 - (ml + 8) % 512) % 512) // 8)
         # append ml, the original message length, as a 64-bit big-endian integer. Thus, the total length is a multiple of 512 bits.
-        msg += struct.pack(b'>Q', ml)
-        return bytes(msg)
+        padding += struct.pack(b'>Q', ml)
+        return bytes(padding)
+
+    def _preprocess(self, message: bytes):
+        return message + self._padding(message)
+
+    def __init__(self, i0=0x67452301, i1=0xEFCDAB89, i2=0x98BADCFE, i3=0x10325476, i4=0xC3D2E1F0):
+        """ Overwrite initialization variables for challenge 29 """
+        self.i0 = i0
+        self.i1 = i1
+        self.i2 = i2
+        self.i3 = i3
+        self.i4 = i4
 
     def digest(self, message: bytes):
         # Initialize variables:
-        h0 = 0x67452301
-        h1 = 0xEFCDAB89
-        h2 = 0x98BADCFE
-        h3 = 0x10325476
-        h4 = 0xC3D2E1F0
+        h0 = self.i0
+        h1 = self.i1
+        h2 = self.i2
+        h3 = self.i3
+        h4 = self.i4
 
-        preprocessed_message = self.preprocess(message)
+        preprocessed_message = self._preprocess(message)
         # Process the message in successive 512-bit chunks:
         for chunk in chunks(preprocessed_message):
             # break chunk into sixteen 32-bit big-endian words w[i], 0 ≤ i ≤ 15
