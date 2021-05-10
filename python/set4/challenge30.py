@@ -29,17 +29,17 @@ class MD5:
     see https://www.nist.gov/itl/ssd/software-quality-group/nsrl-test-data
 
     >>> md5 = MD5()
-    >>> md5.digest(b"")
+    >>> md5.hexdigest(b"")
     'd41d8cd98f00b204e9800998ecf8427e'
-    >>> md5.digest(b"The quick brown fox jumps over the lazy dog")
+    >>> md5.hexdigest(b"The quick brown fox jumps over the lazy dog")
     '9e107d9d372bb6826bd81d3542a419d6'
-    >>> md5.digest(b"The quick brown fox jumps over the lazy dog.")
+    >>> md5.hexdigest(b"The quick brown fox jumps over the lazy dog.")
     'e4d909c290d0fb1ca068ffaddf22cbd0'
-    >>> md5.digest(b"abc")
+    >>> md5.hexdigest(b"abc")
     '900150983cd24fb0d6963f7d28e17f72'
-    >>> md5.digest(b"abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq")
+    >>> md5.hexdigest(b"abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq")
     '8215ef0796a20bcaaae116d3876c664a'
-    >>> md5.digest(b"a" * 1_000_000)
+    >>> md5.hexdigest(b"a" * 1_000_000)
     '7707d6ae4e027c70eea2a935c2296f21'
     """
 
@@ -64,7 +64,7 @@ class MD5:
         self.d = d
         self.pa = pa
 
-    def digest(self, message: bytes):
+    def _digest(self, message: bytes):
         # s specifies the per-round shift amounts
         s = []
         s.extend([7, 12, 17, 22,  7, 12, 17, 22,  7, 12, 17, 22,  7, 12, 17, 22])
@@ -120,6 +120,14 @@ class MD5:
             c0 = (c0 + c) & MASK
             d0 = (d0 + d) & MASK
 
+        return d0, c0, b0, a0
+
+    def digest(self, message: bytes):
+        dd = self._digest(message)
+        return b''.join(d.to_bytes(4, byteorder='little') for d in dd)
+
+    def hexdigest(self, message: bytes):
+        d0, c0, b0, a0 = self._digest(message)
         result = (d0 << 96) | (c0 << 64) | (b0 << 32) | a0   # (Output is in little-endian)
         raw = result.to_bytes(16, byteorder='little')
         return '{:032x}'.format(int.from_bytes(raw, byteorder='big'))
@@ -133,7 +141,7 @@ class Oracle30:
 
     def mac(self, message):
         md5 = MD5()
-        return md5.digest(self.key + message)
+        return md5.hexdigest(self.key + message)
 
 
 def find_init_values(provided_mac):
@@ -159,7 +167,7 @@ def challenge30():
         reference_mac = oracle.mac(original_message + glue_padding + additional_data)
         a, b, c, d = find_init_values(provided_mac)
         # 128: len(key) + len(message) < 10 + 77 = 87 -> 128 = len(preprocessed message)
-        forged_mac = MD5(a, b, c, d, 128).digest(additional_data)
+        forged_mac = MD5(a, b, c, d, 128).hexdigest(additional_data)
         if reference_mac == forged_mac:
             print('Found a collision!')
 

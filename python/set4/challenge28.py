@@ -24,19 +24,19 @@ class SHA1:
     see https://www.di-mgt.com.au/sha_testvectors.html
 
     >>> sha1 = SHA1()
-    >>> sha1.digest(b"")
+    >>> sha1.hexdigest(b"")
     'da39a3ee5e6b4b0d3255bfef95601890afd80709'
-    >>> sha1.digest(b"The quick brown fox jumps over the lazy dog")
+    >>> sha1.hexdigest(b"The quick brown fox jumps over the lazy dog")
     '2fd4e1c67a2d28fced849ee1bb76e7391b93eb12'
-    >>> sha1.digest(b"The quick brown fox jumps over the lazy cog")
+    >>> sha1.hexdigest(b"The quick brown fox jumps over the lazy cog")
     'de9f2c7fd25e1b3afad3e85a0bd17d9b100db4b3'
-    >>> sha1.digest(b"abc")
+    >>> sha1.hexdigest(b"abc")
     'a9993e364706816aba3e25717850c26c9cd0d89d'
-    >>> sha1.digest(b"abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq")
+    >>> sha1.hexdigest(b"abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq")
     '84983e441c3bd26ebaae4aa1f95129e5e54670f1'
-    >>> sha1.digest(b"abcdefghbcdefghicdefghijdefghijkefghijklfghijklmghijklmnhijklmnoijklmnopjklmnopqklmnopqrlmnopqrsmnopqrstnopqrstu")
+    >>> sha1.hexdigest(b"abcdefghbcdefghicdefghijdefghijkefghijklfghijklmghijklmnhijklmnoijklmnopjklmnopqklmnopqrlmnopqrsmnopqrstnopqrstu")
     'a49b2446a02c645bf419f995b67091253a04a259'
-    >>> sha1.digest(b"a" * 1_000_000)
+    >>> sha1.hexdigest(b"a" * 1_000_000)
     '34aa973cd4c4daa4f61eeb2bdbad27316534016f'
     """
 
@@ -63,7 +63,7 @@ class SHA1:
         self.i4 = i4
         self.pa = pa
 
-    def digest(self, message: bytes):
+    def _digest(self, message: bytes):
         # Initialize variables:
         h0 = self.i0
         h1 = self.i1
@@ -120,14 +120,22 @@ class SHA1:
             h3 = (h3 + d) & MASK
             h4 = (h4 + e) & MASK
 
+        return h0, h1, h2, h3, h4
+
+    def digest(self, message: bytes):
+        hh = self._digest(message)
+        return b''.join(h.to_bytes(4, byteorder='big') for h in hh)
+
+    def hexdigest(self, message: bytes):
+        h0, h1, h2, h3, h4 = self._digest(message)
         # Produce the final hash value (big-endian) as a 160-bit number:
         hh = (h0 << 128) | (h1 << 96) | (h2 << 64) | (h3 << 32) | h4
-        return hex(hh)[2:]
+        return '{:040x}'.format(hh)
 
 
 def authenticateMac(key: bytes, message: bytes):
     sha1 = SHA1()
-    return sha1.digest(key + message)
+    return sha1.hexdigest(key + message)
 
 
 def msg_replace(message: bytes, index: int, b: int):

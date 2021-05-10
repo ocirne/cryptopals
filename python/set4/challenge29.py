@@ -11,7 +11,7 @@ class Oracle29:
 
     def mac(self, message):
         sha1 = SHA1()
-        return sha1.digest(self.key + message)
+        return sha1.hexdigest(self.key + message)
 
 
 # TODO Does not find a collision 100% of the time
@@ -27,7 +27,7 @@ def challenge29():
         reference_mac = oracle.mac(original_message + glue_padding + additional_data)
         a, b, c, d, e = [int(provided_mac[i:i+8], 16) for i in range(0, 40, 8)]
         # 128: len(key) + len(message) < 10 + 77 = 87 -> 128 = len(preprocessed message)
-        forged_mac = SHA1(a, b, c, d, e, 128).digest(additional_data)
+        forged_mac = SHA1(a, b, c, d, e, 128).hexdigest(additional_data)
         if reference_mac == forged_mac:
             print('Found a collision!')
 
