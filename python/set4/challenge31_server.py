@@ -1,3 +1,5 @@
+import secrets
+import time
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from urllib.parse import parse_qs, urlparse
 
@@ -73,6 +75,17 @@ def hmac_md5(key: bytes, message: bytes):
     return hmac(key, message, MD5(), block_size=64)
 
 
+SECRET_KEY = secrets.token_bytes(16)
+
+
+def insecure_compare(s: str, r: str):
+    for c, d in zip(s, r):
+        if c != d:
+            return False
+        time.sleep(0.05)
+    return True
+
+
 class TinyServer(BaseHTTPRequestHandler):
     """
     e.g. http://localhost:9000/test?file=foo&signature=46b4ec586117154dacd49d664e5d63fdc88efb51
@@ -85,12 +98,11 @@ class TinyServer(BaseHTTPRequestHandler):
         query_components = parse_qs(query)
         file_param = query_components["file"][0]
         signature_param = query_components["signature"][0]
-
-        try:
-            file_to_open = open(self.path[1:]).read()
+        hmac = hmac_sha1(SECRET_KEY, file_param.encode())
+        print('hint:', hmac)
+        if insecure_compare(hmac, signature_param):
             self.send_response(200)
-        except Exception:
-            file_to_open = "File not found"
+        else:
             self.send_response(500)
         self.end_headers()
 
