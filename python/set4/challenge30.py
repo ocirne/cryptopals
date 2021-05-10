@@ -120,14 +120,14 @@ class MD5:
             c0 = (c0 + c) & MASK
             d0 = (d0 + d) & MASK
 
-        return d0, c0, b0, a0
+        return a0, b0, c0, d0
 
     def digest(self, message: bytes):
         dd = self._digest(message)
         return b''.join(d.to_bytes(4, byteorder='little') for d in dd)
 
     def hexdigest(self, message: bytes):
-        d0, c0, b0, a0 = self._digest(message)
+        a0, b0, c0, d0 = self._digest(message)
         result = (d0 << 96) | (c0 << 64) | (b0 << 32) | a0   # (Output is in little-endian)
         raw = result.to_bytes(16, byteorder='little')
         return '{:032x}'.format(int.from_bytes(raw, byteorder='big'))
