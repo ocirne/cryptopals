@@ -17,26 +17,34 @@ def timed_request(signature_prefix: str, guess: str):
     return response, signature
 
 
+def is_definitive(response_times: list):
+    srt = sorted(response_times, reverse=True)
+    print(srt)
+    return srt[0] - srt[1] > srt[1] - srt[2]
+
+
 def guess_next(known: str):
+    """
+    Alternative:
+    - Base time mit falschen Request berechnen
+    - Ersten Wert nehmen, wo die response.elapsed um mehr als 25 ms größer ist
+    """
     # known false request
-    response, _ = timed_request(known, 'x')
-    base_ms = response.elapsed.microseconds
     response_ms_max = 0
+    response_times = []
     result = None
     for i in range(16):
         c = f'{i:x}'
         response, signature = timed_request(known, c)
         if response.ok:
-            return True, c, i + 1
-        response_ms = response.elapsed.microseconds
-        # shortcut
-#        if response_ms - base_ms > 40_000:
-#            return False, c, i + 1
-        # fallback, use the value with the longest response
+            return True, True, c, i + 1
+        response_ms = response.elapsed.total_seconds()
+        # use the value with the longest response
+        response_times.append(response_ms)
         if response_ms_max < response_ms:
             response_ms_max = response_ms
             result = c
-    return False, result, 17
+    return False, is_definitive(response_times), result, 17
 
 
 def challenge31():
@@ -44,14 +52,18 @@ def challenge31():
     total_requests = 0
     tic = time.perf_counter()
     while True:
-        found, nibble, count_requests = guess_next(known_signature)
-        known_signature += nibble
-        print(known_signature)
+        found, definitive, nibble, count_requests = guess_next(known_signature)
+        if definitive:
+            known_signature += nibble
+            print(known_signature)
+            if found:
+                toc = time.perf_counter()
+                print('found', known_signature, 'in', toc - tic, 'seconds with', total_requests, 'requests')
+                break
+        else:
+            # no definitive result, try again
+            print('try again')
         total_requests += count_requests
-        if found:
-            toc = time.perf_counter()
-            print('found', known_signature, 'in', toc - tic, 'seconds with', total_requests, 'requests')
-            break
 
 
 if __name__ == '__main__':
