@@ -84,7 +84,10 @@ def insecure_compare(s: str, r: str):
     for c, d in zip(s, r):
         if c != d:
             return False
-        time.sleep(0.05)
+        # Challenge 31
+        #time.sleep(0.05)
+        # Challenge 32
+        time.sleep(0.001)
     return True
 
 

@@ -19,8 +19,10 @@ def timed_request(signature_prefix: str, guess: str):
 
 def is_definitive(response_times: list):
     srt = sorted(response_times, reverse=True)
-    print(srt)
-    return srt[0] - srt[1] > srt[1] - srt[2]
+    # Challenge 31:
+#    return srt[0] - srt[1] > srt[1] - srt[2]
+    # Challenge 32:
+    return srt[0] - srt[1] > srt[1] - srt[6]
 
 
 def guess_next(known: str):
