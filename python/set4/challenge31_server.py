@@ -79,6 +79,8 @@ SECRET_KEY = secrets.token_bytes(16)
 
 
 def insecure_compare(s: str, r: str):
+    if len(s) != len(r):
+        return False
     for c, d in zip(s, r):
         if c != d:
             return False
@@ -98,6 +100,7 @@ class TinyServer(BaseHTTPRequestHandler):
         query_components = parse_qs(query)
         file_param = query_components["file"][0]
         signature_param = query_components["signature"][0]
+        # Use filename as file for simplicity
         hmac = hmac_sha1(SECRET_KEY, file_param.encode())
         print('hint:', hmac)
         if insecure_compare(hmac, signature_param):
