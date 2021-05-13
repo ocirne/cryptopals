@@ -3,24 +3,24 @@ import time
 
 import requests
 
-URL = 'http://localhost:9000/test'
+URL = "http://localhost:9000/test"
 
 
 def random_padding(length):
-    return ''.join(random.choice('0123456789abcdef') for _ in range(length))
+    return "".join(random.choice("0123456789abcdef") for _ in range(length))
 
 
 def timed_request(signature_prefix: str, guess: str):
     padding = random_padding(39 - len(signature_prefix))
-    signature = '%s%s%s' % (signature_prefix, guess, padding)
-    response = requests.get(url=URL, params={'file': 'foo', 'signature': signature})
+    signature = "%s%s%s" % (signature_prefix, guess, padding)
+    response = requests.get(url=URL, params={"file": "foo", "signature": signature})
     return response, signature
 
 
 def is_definitive(response_times: list):
     srt = sorted(response_times, reverse=True)
     # Challenge 31:
-#    return srt[0] - srt[1] > srt[1] - srt[2]
+    #    return srt[0] - srt[1] > srt[1] - srt[2]
     # Challenge 32:
     return srt[0] - srt[1] > srt[1] - srt[6]
 
@@ -36,7 +36,7 @@ def guess_next(known: str):
     response_times = []
     result = None
     for i in range(16):
-        c = f'{i:x}'
+        c = f"{i:x}"
         response, signature = timed_request(known, c)
         if response.ok:
             return True, True, c, i + 1
@@ -50,7 +50,7 @@ def guess_next(known: str):
 
 
 def challenge31():
-    known_signature = ''
+    known_signature = ""
     total_requests = 0
     tic = time.perf_counter()
     while True:
@@ -60,13 +60,13 @@ def challenge31():
             print(known_signature)
             if found:
                 toc = time.perf_counter()
-                print('found', known_signature, 'in', toc - tic, 'seconds with', total_requests, 'requests')
+                print("found", known_signature, "in", toc - tic, "seconds with", total_requests, "requests")
                 break
         else:
             # no definitive result, try again
-            print('try again')
+            print("try again")
         total_requests += count_requests
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     challenge31()

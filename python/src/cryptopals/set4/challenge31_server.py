@@ -15,7 +15,7 @@ def insecure_compare(s: str, r: str):
         if c != d:
             return False
         # Challenge 31
-        #time.sleep(0.05)
+        # time.sleep(0.05)
         # Challenge 32
         time.sleep(0.001)
     return True
@@ -35,7 +35,7 @@ class TinyServer(BaseHTTPRequestHandler):
         signature_param = query_components["signature"][0]
         # Use filename as file for simplicity
         hmac = hmac_sha1(SECRET_KEY, file_param.encode())
-        print('hint:', hmac)
+        print("hint:", hmac)
         if insecure_compare(hmac, signature_param):
             self.send_response(200)
         else:
@@ -43,6 +43,6 @@ class TinyServer(BaseHTTPRequestHandler):
         self.end_headers()
 
 
-if __name__ == '__main__':
-    httpd = HTTPServer(('localhost', 9000), TinyServer)
+if __name__ == "__main__":
+    httpd = HTTPServer(("localhost", 9000), TinyServer)
     httpd.serve_forever()

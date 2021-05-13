@@ -1,5 +1,5 @@
-
 # https://de.wikipedia.org/wiki/Mersenne-Twister
+
 
 class MersenneTwister:
 
@@ -24,7 +24,7 @@ class MersenneTwister:
     @staticmethod
     def tempering(p):
         e = p
-        e ^= (e >> 11)
+        e ^= e >> 11
         e ^= (e << 7) & 0x9D2C_5680
         e ^= (e << 15) & 0xEFC6_0000
         return e ^ (e >> 18)
@@ -61,5 +61,5 @@ def challenge21(seed):
     print(mt.next())
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     challenge21(1131464071)

@@ -17,5 +17,5 @@ def challenge9(text, block_size):
     >>> len(padded), padded
     (6, 'FOO\\x03\\x03\\x03')
     """
-    ba = bytes(text, 'UTF-8')
+    ba = bytes(text, "UTF-8")
     return padding(ba, block_size).decode()

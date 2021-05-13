@@ -8,6 +8,6 @@ def challenge3(secret):
     """
     s = from_hex(secret)
     most_common_byte = most_common(s)
-    key = most_common_byte ^ ord(' ')
+    key = most_common_byte ^ ord(" ")
     plain_ba = xor_single(s, key)
     return plain_ba.decode()

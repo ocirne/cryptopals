@@ -14,7 +14,7 @@ def wait_random():
 def prepare_challenge22():
     wait_random()
     unix_timestamp = int(time.time())
-    print('hint %s' % unix_timestamp)
+    print("hint %s" % unix_timestamp)
     mt = MersenneTwister(unix_timestamp)
     wait_random()
     end_timestamp = int(time.time())
@@ -33,9 +33,9 @@ def challenge22(prn, now):
             return ut
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     expected, prn, now = prepare_challenge22()
     tic = time.perf_counter()
     actual = challenge22(prn, now)
     toc = time.perf_counter()
-    print(f'recovered {actual} in {toc - tic:0.2f} seconds')
+    print(f"recovered {actual} in {toc - tic:0.2f} seconds")

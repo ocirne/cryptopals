@@ -1,4 +1,3 @@
-
 import secrets
 from urllib.parse import quote_plus
 
@@ -10,7 +9,6 @@ BLOCK_SIZE = 16
 
 
 class Oracle16:
-
     def __init__(self):
         self.key = secrets.token_bytes(BLOCK_SIZE)
         self.iv = secrets.token_bytes(BLOCK_SIZE)
@@ -33,12 +31,12 @@ oracle = Oracle16()
 
 def is_broken_c16(ciphertext: bytes):
     plaintext = oracle.decrypt(ciphertext)
-    return b';admin=true;' in plaintext
+    return b";admin=true;" in plaintext
 
 
 def modify(ct: bytes):
     mutable_ct = bytearray(ct)
-    for (i, (x, y)) in enumerate(zip('g%20MCs;user', ';admin=true;')):
+    for (i, (x, y)) in enumerate(zip("g%20MCs;user", ";admin=true;")):
         mutable_ct[i] ^= ord(x) ^ ord(y)
     return bytes(mutable_ct)
 
@@ -47,18 +45,18 @@ def challenge16():
     """
     >>> challenge16()
     """
-    ciphertext = oracle.encrypt(';admin=true;')
+    ciphertext = oracle.encrypt(";admin=true;")
     modified = modify(ciphertext)
 
-#    print('----')
-#    plaintext = decrypt_c16(ciphertext)
-#    mod_plaintext = decrypt_c16(modified)
-#    for chunk, mod_chunk in zip(chunks(plaintext, BLOCK_SIZE), chunks(mod_plaintext, BLOCK_SIZE)):
-#        print("%s    %s\n%s    %s\n" % (chunk.hex(), chunk, mod_chunk.hex(), mod_chunk))
+    #    print('----')
+    #    plaintext = decrypt_c16(ciphertext)
+    #    mod_plaintext = decrypt_c16(modified)
+    #    for chunk, mod_chunk in zip(chunks(plaintext, BLOCK_SIZE), chunks(mod_plaintext, BLOCK_SIZE)):
+    #        print("%s    %s\n%s    %s\n" % (chunk.hex(), chunk, mod_chunk.hex(), mod_chunk))
 
     assert not is_broken_c16(ciphertext)
     assert is_broken_c16(modified)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     challenge16()

@@ -12,7 +12,7 @@ class Oracle20:
     KEY = secrets.token_bytes(16)
 
     def aes_ctr(self):
-        ctr = AesCounter.new(64, prefix='\x00' * 8, little_endian=True, initial_value=0)
+        ctr = AesCounter.new(64, prefix="\x00" * 8, little_endian=True, initial_value=0)
         return AES.new(self.KEY, AES.MODE_CTR, counter=ctr)
 
     def encrypt(self, plain_text: bytes):
@@ -34,12 +34,12 @@ def find_key(column):
 
 def challenge20():
     oracle = Oracle20()
-    f = open(Path(__file__).parent / 'resources/20.txt')
+    f = open(Path(__file__).parent / "resources/20.txt")
     cipher_texts = oracle.encrypt_lines(f)
     key = bytes(find_key(column) for column in columns(cipher_texts))
     for line in cipher_texts:
         print(xor(key, line))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     challenge20()

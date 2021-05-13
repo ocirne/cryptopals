@@ -35,7 +35,6 @@ class MersenneTwisterStreamCipher:
 
 
 class Oracle24:
-
     def __init__(self):
         self.seed = secrets.randbits(16)
         self.mtsc = MersenneTwisterStreamCipher(self.seed)
@@ -55,7 +54,7 @@ def recover_seed(ct: bytes, known: bytes):
     >>> recovered_seed = recover_seed(cipher_text, plain_text)
     >>> assert recovered_seed == oracle.seed
     """
-    for seed in range(2**16):
+    for seed in range(2 ** 16):
         mt = MersenneTwisterStreamCipher(seed)
         cpt = mt.decrypt(ct)
         if cpt is not None and known in cpt:

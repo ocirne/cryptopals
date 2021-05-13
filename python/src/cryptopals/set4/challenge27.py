@@ -1,4 +1,3 @@
-
 import secrets
 
 from Crypto.Cipher import AES
@@ -9,7 +8,6 @@ BLOCK_SIZE = 16
 
 
 class Oracle26:
-
     def __init__(self):
         self.key = secrets.token_bytes(BLOCK_SIZE)
         self.iv = self.key
@@ -19,10 +17,10 @@ class Oracle26:
 
     def encrypt(self, pt: bytes):
         # ??
-#        try:
-#            plain_text = pt.decode("ascii")
-#        except UnicodeDecodeError as e:
-#            raise Exception(e, "pt")
+        #        try:
+        #            plain_text = pt.decode("ascii")
+        #        except UnicodeDecodeError as e:
+        #            raise Exception(e, "pt")
         return bytes(self.aes_cbc().encrypt(padding(pt)))
 
     def decrypt(self, ct: bytes):
@@ -48,11 +46,11 @@ def challenge27():
     modified = modify(ciphertext)
 
     rpt = oracle.decrypt(modified)
-    rpt1, rpt3 = rpt[:BLOCK_SIZE], rpt[2*BLOCK_SIZE:3*BLOCK_SIZE]
+    rpt1, rpt3 = rpt[:BLOCK_SIZE], rpt[2 * BLOCK_SIZE : 3 * BLOCK_SIZE]
     xor_p1_p3 = xor(rpt1, rpt3)
 
     assert xor_p1_p3 == oracle.key
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     challenge27()

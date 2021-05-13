@@ -1,4 +1,3 @@
-
 # see https://tools.ietf.org/html/rfc5652 6.3
 
 from cryptopals.basics import strip_padding
@@ -29,5 +28,5 @@ def challenge15(plaintext: bytes):
     """
     t = strip_padding(plaintext)
     if t is None:
-        raise Exception('Invalid padding')
+        raise Exception("Invalid padding")
     return t

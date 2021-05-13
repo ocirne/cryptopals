@@ -10,11 +10,11 @@ def left_rotate(w, r):
 
 
 def big_endian_word(w: bytes):
-    return int.from_bytes(w, byteorder='big', signed=False)
+    return int.from_bytes(w, byteorder="big", signed=False)
 
 
 def little_endian_word(w: bytes):
-    return int.from_bytes(w, byteorder='little', signed=False)
+    return int.from_bytes(w, byteorder="little", signed=False)
 
 
 class SHA1:
@@ -33,7 +33,8 @@ class SHA1:
     'a9993e364706816aba3e25717850c26c9cd0d89d'
     >>> sha1.hexdigest(b"abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq")
     '84983e441c3bd26ebaae4aa1f95129e5e54670f1'
-    >>> sha1.hexdigest(b"abcdefghbcdefghicdefghijdefghijkefghijklfghijklmghijklmnhijklmnoijklmnopjklmnopqklmnopqrlmnopqrsmnopqrstnopqrstu")
+    >>> sha1.hexdigest(\
+    b"abcdefghbcdefghicdefghijdefghijkefghijklfghijklmghijklmnhijklmnoijklmnopjklmnopqklmnopqrlmnopqrsmnopqrstnopqrstu")
     'a49b2446a02c645bf419f995b67091253a04a259'
     >>> sha1.hexdigest(b"a" * 1_000_000)
     '34aa973cd4c4daa4f61eeb2bdbad27316534016f'
@@ -43,11 +44,13 @@ class SHA1:
         # ml = message length in bits, 64 bit quantity
         ml = (len(message) + self.pa) * 8
         # append the bit '1' to the message e.g. by adding 0x80 if message length is a multiple of 8 bits.
-        padding = b'\x80'
-        # append 0 ≤ k < 512 bits '0', such that the resulting message length in bits is congruent to −64 ≡ 448 (mod 512)
-        padding += b'\x00' * (((448 - (ml + 8) % 512) % 512) // 8)
-        # append ml, the original message length, as a 64-bit big-endian integer. Thus, the total length is a multiple of 512 bits.
-        padding += (ml & 0xFFFFFFFFFFFFFFFF).to_bytes(8, byteorder='big')
+        padding = b"\x80"
+        # append 0 ≤ k < 512 bits '0', such that the resulting message length in bits is congruent to −64 ≡ 448
+        # (mod 512)
+        padding += b"\x00" * (((448 - (ml + 8) % 512) % 512) // 8)
+        # append ml, the original message length, as a 64-bit big-endian integer. Thus, the total length is a multiple
+        # of 512 bits.
+        padding += (ml & 0xFFFFFFFFFFFFFFFF).to_bytes(8, byteorder="big")
         return bytes(padding)
 
     def _preprocess(self, message: bytes):
@@ -74,11 +77,11 @@ class SHA1:
         # Process the message in successive 512-bit chunks:
         for _, chunk in chunks(preprocessed_message, 64):
             # break chunk into sixteen 32-bit big-endian words w[i], 0 ≤ i ≤ 15
-            w = [big_endian_word(chunk[i:i+4]) for i in range(0, 64, 4)]
+            w = [big_endian_word(chunk[i : i + 4]) for i in range(0, 64, 4)]
 
             # Message schedule: extend the sixteen 32-bit words into eighty 32-bit words:
             for i in range(16, 80):
-                w.append(left_rotate(w[i-3] ^ w[i-8] ^ w[i-14] ^ w[i-16], 1))
+                w.append(left_rotate(w[i - 3] ^ w[i - 8] ^ w[i - 14] ^ w[i - 16], 1))
 
             # Initialize hash value for this chunk:
             a = h0
@@ -123,13 +126,13 @@ class SHA1:
 
     def digest(self, message: bytes):
         hh = self._digest(message)
-        return b''.join(h.to_bytes(4, byteorder='big') for h in hh)
+        return b"".join(h.to_bytes(4, byteorder="big") for h in hh)
 
     def hexdigest(self, message: bytes):
         h0, h1, h2, h3, h4 = self._digest(message)
         # Produce the final hash value (big-endian) as a 160-bit number:
         hh = (h0 << 128) | (h1 << 96) | (h2 << 64) | (h3 << 32) | h4
-        return '{:040x}'.format(hh)
+        return "{:040x}".format(hh)
 
 
 class MD5:
@@ -156,17 +159,17 @@ class MD5:
         # ml = message length in bits
         ml = len(message) + self.pa
         # Pre-processing: adding a single 1 bit
-        padding = b'\x80'
+        padding = b"\x80"
         # Pre-processing: padding with zeros
-        padding += b'\x00' * ((56 - (ml + 1) & 0x3F) & 0x3F)
+        padding += b"\x00" * ((56 - (ml + 1) & 0x3F) & 0x3F)
         # append original length in bits mod 264 to message
-        padding += ((ml * 8) & 0xFFFFFFFFFFFFFFFF).to_bytes(8, byteorder='little')
+        padding += ((ml * 8) & 0xFFFFFFFFFFFFFFFF).to_bytes(8, byteorder="little")
         return bytes(padding)
 
     def _preprocess(self, message: bytes):
         return message + self.padding(message)
 
-    def __init__(self, a=0x67452301, b=0xefcdab89, c=0x98badcfe, d=0x10325476, pa=0):
+    def __init__(self, a=0x67452301, b=0xEFCDAB89, c=0x98BADCFE, d=0x10325476, pa=0):
         self.a = a
         self.b = b
         self.c = c
@@ -176,13 +179,13 @@ class MD5:
     def _digest(self, message: bytes):
         # s specifies the per-round shift amounts
         s = []
-        s.extend([7, 12, 17, 22,  7, 12, 17, 22,  7, 12, 17, 22,  7, 12, 17, 22])
-        s.extend([5,  9, 14, 20,  5,  9, 14, 20,  5,  9, 14, 20,  5,  9, 14, 20])
-        s.extend([4, 11, 16, 23,  4, 11, 16, 23,  4, 11, 16, 23,  4, 11, 16, 23])
-        s.extend([6, 10, 15, 21,  6, 10, 15, 21,  6, 10, 15, 21,  6, 10, 15, 21])
+        s.extend([7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22])
+        s.extend([5, 9, 14, 20, 5, 9, 14, 20, 5, 9, 14, 20, 5, 9, 14, 20])
+        s.extend([4, 11, 16, 23, 4, 11, 16, 23, 4, 11, 16, 23, 4, 11, 16, 23])
+        s.extend([6, 10, 15, 21, 6, 10, 15, 21, 6, 10, 15, 21, 6, 10, 15, 21])
 
         # Use binary integer part of the sines of integers (Radians) as constants:
-        k = [int((2**32) * abs(math.sin(i + 1))) & MASK for i in range(64)]
+        k = [int((2 ** 32) * abs(math.sin(i + 1))) & MASK for i in range(64)]
 
         # Initialize variables:
         a0 = self.a
@@ -194,7 +197,7 @@ class MD5:
         # Process the message in successive 512-bit chunks:
         for _, chunk in chunks(padded_message, 64):
             # break chunk into sixteen 32-bit words M[j], 0 ≤ j ≤ 15
-            m = [little_endian_word(chunk[i:i+4]) for i in range(0, 64, 4)]
+            m = [little_endian_word(chunk[i : i + 4]) for i in range(0, 64, 4)]
             # Initialize hash value for this chunk:
             a = a0
             b = b0
@@ -207,13 +210,13 @@ class MD5:
                     g = i
                 elif 16 <= i <= 31:
                     f = c ^ (d & (b ^ c))
-                    g = (5*i + 1) & 0xF
+                    g = (5 * i + 1) & 0xF
                 elif 32 <= i <= 47:
                     f = b ^ c ^ d
-                    g = (3*i + 5) & 0xF
+                    g = (3 * i + 5) & 0xF
                 elif 48 <= i <= 63:
                     f = c ^ (b | (~d))
-                    g = (7*i) & 0xF
+                    g = (7 * i) & 0xF
                 else:
                     raise
 
@@ -233,13 +236,13 @@ class MD5:
 
     def digest(self, message: bytes):
         dd = self._digest(message)
-        return b''.join(d.to_bytes(4, byteorder='little') for d in dd)
+        return b"".join(d.to_bytes(4, byteorder="little") for d in dd)
 
     def hexdigest(self, message: bytes):
         a0, b0, c0, d0 = self._digest(message)
-        result = (d0 << 96) | (c0 << 64) | (b0 << 32) | a0   # (Output is in little-endian)
-        raw = result.to_bytes(16, byteorder='little')
-        return '{:032x}'.format(int.from_bytes(raw, byteorder='big'))
+        result = (d0 << 96) | (c0 << 64) | (b0 << 32) | a0  # (Output is in little-endian)
+        raw = result.to_bytes(16, byteorder="little")
+        return "{:032x}".format(int.from_bytes(raw, byteorder="big"))
 
 
 def hmac(key: bytes, message: bytes, mac, block_size):
@@ -253,10 +256,10 @@ def hmac(key: bytes, message: bytes, mac, block_size):
 
     # Keys shorter than blockSize are padded to blockSize by padding with zeros on the right
     if len(key) < block_size:
-        key += b'\x00' * (block_size - len(key))  # Pad key with zeros to make it blockSize bytes long
+        key += b"\x00" * (block_size - len(key))  # Pad key with zeros to make it blockSize bytes long
 
-    o_key_pad = xor(key, b'\x5c' * block_size)   # Outer padded key
-    i_key_pad = xor(key, b'\x36' * block_size)   # Inner padded key
+    o_key_pad = xor(key, b"\x5c" * block_size)  # Outer padded key
+    i_key_pad = xor(key, b"\x36" * block_size)  # Inner padded key
 
     return mac.hexdigest(o_key_pad + mac.digest(i_key_pad + message))
 
@@ -307,4 +310,3 @@ def hmac_md5(key: bytes, message: bytes):
     '6f630fad67cda0ee1fb1f562db3aa53e'
     """
     return hmac(key, message, MD5(), block_size=64)
-

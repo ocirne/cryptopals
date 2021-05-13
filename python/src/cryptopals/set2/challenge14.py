@@ -10,11 +10,13 @@ BLOCK_SIZE = 16
 key = secrets.token_bytes(BLOCK_SIZE)
 random_prefix = secrets.token_bytes(randint(1, 100))
 
-target_bytes = b64decode('''
+target_bytes = b64decode(
+    """
 Um9sbGluJyBpbiBteSA1LjAKV2l0aCBteSByYWctdG9wIGRvd24gc28gbXkg
 aGFpciBjYW4gYmxvdwpUaGUgZ2lybGllcyBvbiBzdGFuZGJ5IHdhdmluZyBq
 dXN0IHRvIHNheSBoaQpEaWQgeW91IHN0b3A/IE5vLCBJIGp1c3QgZHJvdmUg
-YnkK''')
+YnkK"""
+)
 
 
 def encryption_oracle(attacker_controlled):
@@ -25,7 +27,7 @@ def encryption_oracle(attacker_controlled):
 def lookup(skip, inject_length, known_secret: bytes, known_content: bytes):
     for b in range(256):
         secret = encryption_oracle((b"\x00" * inject_length) + known_content + bytes([b]))
-        if secret[skip:skip + BLOCK_SIZE] == known_secret[skip:skip + BLOCK_SIZE]:
+        if secret[skip : skip + BLOCK_SIZE] == known_secret[skip : skip + BLOCK_SIZE]:
             return b
 
 
@@ -56,8 +58,8 @@ def encryption_detector(printing=False):
         if b != 0:
             known.append(b)
             if printing:
-                print(chr(b), end='')
+                print(chr(b), end="")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     encryption_detector(True)

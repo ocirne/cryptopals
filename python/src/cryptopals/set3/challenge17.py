@@ -1,4 +1,3 @@
-
 # see https://en.wikipedia.org/wiki/Padding_oracle_attack
 
 import base64
@@ -15,16 +14,16 @@ BLOCK_SIZE = 16
 class Oracle17:
 
     SECRETS = [
-        b'MDAwMDAwTm93IHRoYXQgdGhlIHBhcnR5IGlzIGp1bXBpbmc=',
-        b'MDAwMDAxV2l0aCB0aGUgYmFzcyBraWNrZWQgaW4gYW5kIHRoZSBWZWdhJ3MgYXJlIHB1bXBpbic=',
-        b'MDAwMDAyUXVpY2sgdG8gdGhlIHBvaW50LCB0byB0aGUgcG9pbnQsIG5vIGZha2luZw==',
-        b'MDAwMDAzQ29va2luZyBNQydzIGxpa2UgYSBwb3VuZCBvZiBiYWNvbg==',
-        b'MDAwMDA0QnVybmluZyAnZW0sIGlmIHlvdSBhaW4ndCBxdWljayBhbmQgbmltYmxl',
-        b'MDAwMDA1SSBnbyBjcmF6eSB3aGVuIEkgaGVhciBhIGN5bWJhbA==',
-        b'MDAwMDA2QW5kIGEgaGlnaCBoYXQgd2l0aCBhIHNvdXBlZCB1cCB0ZW1wbw==',
-        b'MDAwMDA3SSdtIG9uIGEgcm9sbCwgaXQncyB0aW1lIHRvIGdvIHNvbG8=',
-        b'MDAwMDA4b2xsaW4nIGluIG15IGZpdmUgcG9pbnQgb2g=',
-        b'MDAwMDA5aXRoIG15IHJhZy10b3AgZG93biBzbyBteSBoYWlyIGNhbiBibG93'
+        b"MDAwMDAwTm93IHRoYXQgdGhlIHBhcnR5IGlzIGp1bXBpbmc=",
+        b"MDAwMDAxV2l0aCB0aGUgYmFzcyBraWNrZWQgaW4gYW5kIHRoZSBWZWdhJ3MgYXJlIHB1bXBpbic=",
+        b"MDAwMDAyUXVpY2sgdG8gdGhlIHBvaW50LCB0byB0aGUgcG9pbnQsIG5vIGZha2luZw==",
+        b"MDAwMDAzQ29va2luZyBNQydzIGxpa2UgYSBwb3VuZCBvZiBiYWNvbg==",
+        b"MDAwMDA0QnVybmluZyAnZW0sIGlmIHlvdSBhaW4ndCBxdWljayBhbmQgbmltYmxl",
+        b"MDAwMDA1SSBnbyBjcmF6eSB3aGVuIEkgaGVhciBhIGN5bWJhbA==",
+        b"MDAwMDA2QW5kIGEgaGlnaCBoYXQgd2l0aCBhIHNvdXBlZCB1cCB0ZW1wbw==",
+        b"MDAwMDA3SSdtIG9uIGEgcm9sbCwgaXQncyB0aW1lIHRvIGdvIHNvbG8=",
+        b"MDAwMDA4b2xsaW4nIGluIG15IGZpdmUgcG9pbnQgb2g=",
+        b"MDAwMDA5aXRoIG15IHJhZy10b3AgZG93biBzbyBteSBoYWlyIGNhbiBibG93",
     ]
 
     KEY = secrets.token_bytes(BLOCK_SIZE)
@@ -47,7 +46,7 @@ class Oracle17:
 def modify(chunk: bytes, known: bytes, block_end: int, c: int):
     ct = bytearray(chunk)
     t = len(known) + 1
-    for i in range(t-1):
+    for i in range(t - 1):
         ct[block_end - 1 - i] = ct[block_end - 1 - i] ^ known[i] ^ t
     ct[block_end - t] = ct[block_end - t] ^ c ^ t
     return bytes(ct)
@@ -63,8 +62,8 @@ def decrypt(oracle: Oracle17, ciphertext: bytes, nth: int, iv: bytes = None):
                     modified_iv = modify(iv, known, BLOCK_SIZE, c)
                     oracle.decrypt(ciphertext[:BLOCK_SIZE], modified_iv)
                 else:
-                    modified_ciphertext = modify(ciphertext, known, (nth-1)*BLOCK_SIZE, c)
-                    oracle.decrypt(modified_ciphertext[:nth*BLOCK_SIZE])
+                    modified_ciphertext = modify(ciphertext, known, (nth - 1) * BLOCK_SIZE, c)
+                    oracle.decrypt(modified_ciphertext[: nth * BLOCK_SIZE])
             except InvalidPaddingException:
                 continue
             cc.append(c)
@@ -85,12 +84,12 @@ def challenge17():
     cookie, iv = oracle.encrypt()
     plain_chunks = decrypt(oracle, cookie, 1, iv)
     nth = 2
-    while nth*BLOCK_SIZE <= len(cookie):
+    while nth * BLOCK_SIZE <= len(cookie):
         plain_chunks += decrypt(oracle, cookie, nth)
         nth += 1
     actual = strip_padding(plain_chunks)
     return actual == oracle.plain_text
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     challenge17()

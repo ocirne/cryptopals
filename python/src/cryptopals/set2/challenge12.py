@@ -5,12 +5,12 @@ from cryptopals.basics import padding
 
 key = secrets.token_bytes(16)
 
-unknown_string = '''
+unknown_string = """
 Um9sbGluJyBpbiBteSA1LjAKV2l0aCBteSByYWctdG9wIGRvd24gc28gbXkg
 aGFpciBjYW4gYmxvdwpUaGUgZ2lybGllcyBvbiBzdGFuZGJ5IHdhdmluZyBq
 dXN0IHRvIHNheSBoaQpEaWQgeW91IHN0b3A/IE5vLCBJIGp1c3QgZHJvdmUg
 YnkK
-'''
+"""
 
 
 def encryption_oracle(your_string):
@@ -33,7 +33,7 @@ def discover_block_size():
     >>> discover_block_size()
     16
     """
-    first_bs = len(encryption_oracle(b''))
+    first_bs = len(encryption_oracle(b""))
     hop1 = discover_next_hop(first_bs)
     hop2 = discover_next_hop(hop1 + 1)
     return hop2 - hop1
@@ -45,7 +45,7 @@ def discover_mode():
     'ECB'
     """
     secret = encryption_oracle(b"\x00" * 48)
-    return 'ECB' if secret[16:32] == secret[32:48] else 'CBC'
+    return "ECB" if secret[16:32] == secret[32:48] else "CBC"
 
 
 def lookup(i, known_secret: bytes, known_content: bytes):
@@ -68,8 +68,8 @@ def encryption_detector(printing=False):
             return known.decode()
         known.append(b)
         if printing:
-            print(chr(b), end='')
+            print(chr(b), end="")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     encryption_detector(True)

@@ -36,5 +36,5 @@ def challenge28():
         assert tampered_mac != mac
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     challenge28()

@@ -42,7 +42,7 @@ def hamming_distance(s1: bytes, s2: bytes):
     >>> hamming_distance(t1, t2)
     37
     """
-    return sum(bin(x ^ y).count('1') for x, y in zip(s1, s2))
+    return sum(bin(x ^ y).count("1") for x, y in zip(s1, s2))
 
 
 def padding(ba: bytes, block_size=16):
@@ -50,7 +50,7 @@ def padding(ba: bytes, block_size=16):
     if pad_length == 0:
         pad_length = block_size
     pad_byte = chr(pad_length)
-    return ba + bytes(pad_byte * pad_length, 'UTF-8')
+    return ba + bytes(pad_byte * pad_length, "UTF-8")
 
 
 class InvalidPaddingException(Exception):
@@ -63,11 +63,11 @@ def strip_padding(plaintext: bytes):
     t, s = plaintext[:-i], plaintext[-i:]
     if s == bytes([c] * len(s)) and (not t or t[-1] != c):
         return t
-    raise InvalidPaddingException('Invalid padding')
+    raise InvalidPaddingException("Invalid padding")
 
 
 def chunks(message: bytes, size: int):
     i = 0
     while i < len(message):
-        yield i, message[i:i + size]
+        yield i, message[i : i + size]
         i += size

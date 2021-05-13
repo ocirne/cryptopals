@@ -30,4 +30,4 @@ def encryption_detector(mode_for_testing=None):
     secret = encryption_oracle(content, mode_for_testing)
     block1 = secret[16:32]
     block2 = secret[32:48]
-    return 'ECB' if block1 == block2 else 'CBC'
+    return "ECB" if block1 == block2 else "CBC"
