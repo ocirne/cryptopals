@@ -1,7 +1,5 @@
 import random
 
-from basics import from_hex
-
 
 def challenge33(p, g):
     a = random.randrange(0, p)
