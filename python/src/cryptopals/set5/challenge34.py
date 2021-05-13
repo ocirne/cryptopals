@@ -4,17 +4,25 @@ from typing import Union
 
 from Crypto.Cipher import AES
 
-from basics import padding
-from digests import SHA1
+from cryptopals.basics import padding, strip_padding
+from cryptopals.digests import SHA1
 
 
-def aes_cbc(priv_key: int, message: bytes) -> bytes:
+def aes_cbc_encrypt(priv_key: int, pt: bytes) -> bytes:
     s = priv_key.to_bytes(8, byteorder="big")
     key = SHA1().digest(s)[:16]
     iv = secrets.token_bytes(16)
     aes = AES.new(key, AES.MODE_CBC, iv)
-    aes.encrypt(padding(message))
-    return aes.encrypt(padding(message)) + iv
+    ct = aes.encrypt(padding(pt))
+    return ct + iv
+
+
+def aes_cbc_decrypt(priv_key: int, ct: bytes, iv: bytes) -> bytes:
+    s = priv_key.to_bytes(8, byteorder="big")
+    key = SHA1().digest(s)[:16]
+    aes = AES.new(key, AES.MODE_CBC, iv)
+    pt = aes.decrypt(ct)
+    return strip_padding(pt)
 
 
 class Bob:
@@ -26,7 +34,6 @@ class Bob:
         b = random.randrange(0, p)
         B = pow(g, b, p)
         self.s = pow(A, b, p)
-        print("bob s", self.s)
         return B
 
     def request_message(self, ciphertext_a: bytes) -> bytes:
@@ -34,7 +41,7 @@ class Bob:
         B->M
         Send AES-CBC(SHA1(s)[0:16], iv=random(16), A's msg) + iv
         """
-        return aes_cbc(self.s, ciphertext_a)
+        return aes_cbc_encrypt(self.s, ciphertext_a)
 
 
 class Mallory:
@@ -59,8 +66,14 @@ class Mallory:
         ---
         M->A
         Relay that to A
+
+        Unknown: s
+        s = pow(B, a, p) -> s = pow(p, a, p) = 0
         """
         ct_b = self.bob.request_message(ciphertext_a)
+        ct, iv = ciphertext_a[:-16], ciphertext_a[-16:]
+        recovered_pt = aes_cbc_decrypt(0, ct, iv)
+        print("recovered pt:", recovered_pt)
         return ct_b
 
 
@@ -74,25 +87,27 @@ class Alice:
         A -> M
         Send "p", "g", "A"
         """
-        p = 3700001
-        g = 50
+        p = random.randint(0, 2 ** 31)
+        g = random.randint(0, 100)
         a = random.randrange(0, p)
         A = pow(g, a, p)
         B = self.bob.request_pub_key(p, g, A)
         self.s = pow(B, a, p)
-        print("alice s", self.s)
 
     def request_message(self):
         """
         A -> M
         Send AES-CBC(SHA1(s)[0:16], iv=random(16), msg) + iv
         """
-        ct = aes_cbc(self.s, self.pt)
-        response = self.bob.request_message(ct)
-        print("response", response)
+        ct = aes_cbc_encrypt(self.s, self.pt)
+        self.bob.request_message(ct)
 
 
 def challenge34():
+    """
+    >>> challenge34()
+    recovered pt: b'Ice Ice Baby'
+    """
     bob = Bob()
     mallory = Mallory(bob)
     alice = Alice(mallory)
