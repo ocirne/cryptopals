@@ -116,6 +116,7 @@ class Alice:
         self.pt = b"Ice Ice Baby"
 
     def request_groups(self):
+        # should be a prime, good enough
         self.p = random.randint(0, 2 ** 31)
         self.g = random.randint(0, 100)
         self.a = random.randrange(0, self.p)
@@ -155,8 +156,3 @@ def challenge34(mallory_class):
     alice.request_groups()
     alice.request_pub_key()
     alice.request_message()
-
-
-if __name__ == "__main__":
-    challenge34(Mallory2)
-    challenge34(Mallory3)

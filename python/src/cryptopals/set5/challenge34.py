@@ -87,6 +87,7 @@ class Alice:
         A -> M
         Send "p", "g", "A"
         """
+        # should be a prime, good enough
         p = random.randint(0, 2 ** 31)
         g = random.randint(0, 100)
         a = random.randrange(0, p)
