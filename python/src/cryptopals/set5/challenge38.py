@@ -1,8 +1,11 @@
 import sys
 
 import secrets
+from typing import Union
 
-from cryptopals.set5.challenge36 import sha256, hmac_sha256
+from challenge36 import sha256, hmac_sha256
+
+# from cryptopals.set5.challenge36 import sha256, hmac_sha256
 
 
 def to_bytes(i: int) -> bytes:
@@ -54,8 +57,21 @@ class Server:
         return client_hmac == hmac_sha256(self.K, self.salt)
 
 
-class Client:
+class Mallory:
+    """ modifies b, B, u, salt """
+
     def __init__(self, server: Server):
+        self.server = server
+
+    def request_key(self, I, A):
+        return self.server.request_key(I, A)
+
+    def validate(self, client_hmac):
+        return self.server.validate(client_hmac)
+
+
+class Client:
+    def __init__(self, server: Union[Mallory, Server]):
         self.server = server
 
     def _client_k(self, salt, a, B, u):
@@ -77,7 +93,8 @@ def challenge38():
     True
     """
     server = Server()
-    client = Client(server)
+    mallory = Mallory(server)
+    client = Client(mallory)
 
     return client.run()
 
