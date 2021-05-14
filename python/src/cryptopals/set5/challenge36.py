@@ -19,8 +19,7 @@ def hmac_sha256(key: bytes, message: bytes) -> str:
 
 
 def to_bytes(i: int) -> bytes:
-    r = i.to_bytes(128, sys.byteorder)
-    return r
+    return i.to_bytes(128, sys.byteorder)
 
 
 def to_int(b: bytes) -> int:
@@ -53,7 +52,6 @@ password = b"totally secure password"
 
 class Server:
     def __init__(self):
-        super().__init__()
         self.salt = secrets.token_bytes(16)
         # see https://pythonhosted.org/srp/srp.html
         # x = to_int(sha256(self.salt + sha256(email + b':' + password)))
@@ -77,7 +75,6 @@ class Server:
 
 class Client:
     def __init__(self, server: Server):
-        super().__init__()
         self.server = server
 
     def _client_k(self, salt, a, B, u):
