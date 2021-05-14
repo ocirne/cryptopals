@@ -19,10 +19,7 @@ def hmac_sha256(key: bytes, message: bytes) -> str:
 
 
 def to_bytes(i: int) -> bytes:
-    #    print(i)
     r = i.to_bytes(128, sys.byteorder)
-    # TODO seltsam, r sieht sehr sparse aus
-    print(r)
     return r
 
 
@@ -35,7 +32,19 @@ def hash_public_key(A, B):
 
 
 # for NIST Primes see https://www.johndcook.com/blog/2019/05/12/nist-primes/
-N = 2 ** 521 - 1
+# N = 2 ** 521 - 1
+# this would make every S 2**x
+
+# https://datatracker.ietf.org/doc/html/rfc5054#appendix-A, 1. 1024-bit Group
+N = int(
+    "EEAF0AB9 ADB38DD6 9C33F80A FA8FC5E8 60726187 75FF3C0B 9EA2314C"
+    "9C256576 D674DF74 96EA81D3 383B4813 D692C6E0 E0D5D8E2 50B98BE4"
+    "8E495C1D 6089DAD1 5DC7D7B4 6154D6B6 CE8EF4AD 69B15D49 82559B29"
+    "7BCF1885 C529F566 660E57EC 68EDBC3C 05726CC0 2FD4CBF4 976EAA9A"
+    "FD5138FE 8376435B 9FC61D2F C0EB06E3".replace(" ", ""),
+    16,
+)
+
 g = 2
 k = 3
 email = b"test@example.com"
