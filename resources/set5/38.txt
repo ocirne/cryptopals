@@ -1,0 +1,10 @@
+123456
+bar
+dragon
+foo
+iloveyou
+password
+qwerty
+sticky
+swordfish
+totally secure password
