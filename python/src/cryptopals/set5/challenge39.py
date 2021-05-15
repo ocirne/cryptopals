@@ -1,5 +1,64 @@
+import secrets
+import sys
+
+from cryptopals.basics import padding, strip_padding
+
+
+class MillerRabinTest:
+    """
+    from https://rosettacode.org/wiki/Miller%E2%80%93Rabin_primality_test#Python:_Proved_correct_up_to_large_N
+
+    >>> mrt = MillerRabinTest()
+    >>> [p for p in range(2, 100) if mrt.is_prime(p)]
+    [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97]
+    >>> mrt.is_prime(2**31-1)
+    True
+    """
+
+    def __init__(self):
+        self._known_primes = [2, 3]
+        self._known_primes += [x for x in range(5, 1000, 2) if self.is_prime(x)]
+
+    def _try_composite(self, a, d, n, s):
+        if pow(a, d, n) == 1:
+            return False
+        for i in range(s):
+            if pow(a, 2 ** i * d, n) == n - 1:
+                return False
+        return True
+
+    def is_prime(self, n, _precision_for_huge_n=16):
+        if n in self._known_primes:
+            return True
+        if any((n % p) == 0 for p in self._known_primes) or n in (0, 1):
+            return False
+        d, s = n - 1, 0
+        while not d % 2:
+            d, s = d >> 1, s + 1
+        # Returns exact according to http://primes.utm.edu/prove/prove2_3.html
+        if n < 1373653:
+            return not any(self._try_composite(a, d, n, s) for a in (2, 3))
+        if n < 25326001:
+            return not any(self._try_composite(a, d, n, s) for a in (2, 3, 5))
+        if n < 118670087467:
+            if n == 3215031751:
+                return False
+            return not any(self._try_composite(a, d, n, s) for a in (2, 3, 5, 7))
+        if n < 2152302898747:
+            return not any(self._try_composite(a, d, n, s) for a in (2, 3, 5, 7, 11))
+        if n < 3474749660383:
+            return not any(self._try_composite(a, d, n, s) for a in (2, 3, 5, 7, 11, 13))
+        if n < 341550071728321:
+            return not any(self._try_composite(a, d, n, s) for a in (2, 3, 5, 7, 11, 13, 17))
+        return not any(self._try_composite(a, d, n, s) for a in self._known_primes[:_precision_for_huge_n])
+
+
 def random_prime():
-    return 2 ** 31 - 1
+    mrt = MillerRabinTest()
+    while True:
+        p = secrets.randbits(128)
+        if mrt.is_prime(p):
+            return p
 
 
 def egcd(a, b):
@@ -23,25 +82,62 @@ def invmod(a, n):
     """
     >>> invmod(17, 3120)
     2753
+    >>> invmod(1, 2)
+    1
+    >>> invmod(3, 6)
+    >>> invmod(7, 87)
+    25
+    >>> invmod(25, 87)
+    7
+    >>> invmod(2, 91)
+    46
+    >>> invmod(13, 91)
+    >>> invmod(19, 1212393831)
+    701912218
+    >>> invmod(31, 73714876143)
+    45180085378
+    >>> invmod(3, 73714876143)
     """
     d, s, t = egcd(a, n)
     if d != 1:
-        raise Exception("a is not invertible")
+        return
     if s < 0:
         s += n
     return s % n
 
 
+def str_to_int(s: str) -> int:
+    b = bytes(s, "UTF-8")
+    return int.from_bytes(b, sys.byteorder)
+
+
+def int_to_str(i: int) -> str:
+    b = i.to_bytes(16, sys.byteorder)
+    return b.decode("UTF-8").strip("\x00")
+
+
 class RSA:
+    """
+    >>> rsa = RSA()
+    >>> rsa._decrypt(rsa._encrypt(42))
+    42
+    >>> rsa._encrypt(rsa._decrypt(42))
+    42
+    >>> rsa.decrypt(rsa.encrypt('sticky'))
+    'sticky'
+    """
+
     def __init__(self):
-        p = 23
-        q = 41
-        self.n = p * q
-        et = (p - 1) * (q - 1)
-        # public key: [e, n]
-        self.e = 3
-        # private key: [d, n]
-        self.d = invmod(self.e, et)
+        self.d = None
+        while self.d is None:
+            p = random_prime()
+            q = random_prime()
+            self.n = p * q
+            et = (p - 1) * (q - 1)
+            # public key: [e, n]
+            self.e = 3
+            # private key: [d, n]
+            self.d = invmod(self.e, et)
 
     def _encrypt(self, m: int) -> int:
         return pow(m, self.e, self.n)
@@ -49,23 +145,8 @@ class RSA:
     def _decrypt(self, c: int) -> int:
         return pow(c, self.d, self.n)
 
-    def encrypt(self, m: str) -> str:
-        return pow(m, self.e, self.n)
+    def encrypt(self, p: str) -> int:
+        return self._encrypt(str_to_int(p))
 
-    def decrypt(self, c: str) -> str:
-        return pow(c, self.d, self.n)
-
-
-def challenge39():
-    rsa = RSA()
-    assert rsa._decrypt(rsa._encrypt(42)) == 42
-    assert rsa._encrypt(rsa._decrypt(42)) == 42
-
-
-#    assert rsa.decrypt(rsa.encrypt(b'foo')) == b'foo'
-#    assert rsa.encrypt(rsa.decrypt(b'foo')) == b'foo'
-
-
-if __name__ == "__main__":
-    egcd(24, 18)
-    challenge39()
+    def decrypt(self, c: int) -> str:
+        return int_to_str(self._decrypt(c))
