@@ -104,15 +104,15 @@ def invmod(a, n):
     return s % n
 
 
-def crt(n: list, a: list):
+def crt(n_a: list):
     """
     adapted from https://rosettacode.org/wiki/Chinese_remainder_theorem#Python_3.6
-    >>> crt([3, 5, 7], [2, 3, 2])
+    >>> crt([(3, 2), (5, 3), (7, 2)])
     23
     """
     total = 0
-    prod = math.prod(n)
-    for n_i, a_i in zip(n, a):
+    prod = math.prod(n for n, _ in n_a)
+    for n_i, a_i in n_a:
         p = prod // n_i
         total += a_i * invmod(p, n_i) * p
     return total % prod

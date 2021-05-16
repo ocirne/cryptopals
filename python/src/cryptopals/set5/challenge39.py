@@ -36,6 +36,9 @@ class RSA:
             # private key: [d, n]
             self.d = invmod(self.e, et)
 
+    def public_key(self):
+        return self.e, self.n
+
     def _encrypt(self, m: int) -> int:
         return pow(m, self.e, self.n)
 
