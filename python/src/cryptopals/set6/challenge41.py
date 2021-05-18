@@ -1,4 +1,5 @@
-from cpcrypto import RSA
+from cryptopals.math import invmod
+from cryptopals.crypto import RSA, int_to_str
 
 
 class Bob:
@@ -13,7 +14,7 @@ class Bob:
         if ct in self.seen:
             return None
         self.seen.append(ct)
-        return self.rsa.decrypt(ct)
+        return self.rsa._decrypt(ct)
 
 
 class Alice:
@@ -24,7 +25,7 @@ class Alice:
         self.ct = self.rsa.encrypt(self.secret)
 
     def run(self):
-        pt = self.bob.please_decrypt(self.ct)
+        pt = int_to_str(self.bob.please_decrypt(self.ct))
         assert pt == self.secret
         assert self.bob.please_decrypt(self.ct) is None
 
@@ -35,6 +36,12 @@ class Trudy:
 
     def recover_plaintext(self, ct):
         assert self.bob.please_decrypt(ct) is None
+        e, n = self.bob.rsa.public_key()
+        s = 4  # guaranteed random
+        cs = (pow(s, e, n) * ct) % n
+        ps = self.bob.please_decrypt(cs)
+        p = (ps * invmod(s, n)) % n
+        return int_to_str(p)
 
 
 def challenge41():
