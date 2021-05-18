@@ -16,35 +16,41 @@ class Bob:
         return self.rsa.decrypt(ct)
 
 
-class Mallory:
-    def __init__(self, server: Bob):
-        self.server = server
-
-    def please_decrypt(self, ct):
-        return self.server.please_decrypt(ct)
-
-
 class Alice:
-    def __init__(self, rsa: RSA, server: Mallory):
+    def __init__(self, rsa: RSA, bob: Bob):
         self.rsa = rsa
-        self.server = server
+        self.bob = bob
         self.secret = "Speak Friend"
+        self.ct = self.rsa.encrypt(self.secret)
 
     def run(self):
-        ct = self.rsa.encrypt(self.secret)
-        pt = self.server.please_decrypt(ct)
+        pt = self.bob.please_decrypt(self.ct)
         assert pt == self.secret
-        assert self.server.please_decrypt(ct) is None
+        assert self.bob.please_decrypt(self.ct) is None
+
+
+class Trudy:
+    def __init__(self, bob: Bob):
+        self.bob = bob
+
+    def recover_plaintext(self, ct):
+        assert self.bob.please_decrypt(ct) is None
 
 
 def challenge41():
+    """
+    >>> challenge41()
+    'Speak Friend'
+    """
     # TODO a shared RSA instance is as wrong as possible
     rsa = RSA()
     bob = Bob(rsa)
-    mallory = Mallory(bob)
-    alice = Alice(rsa, mallory)
+    alice = Alice(rsa, bob)
     alice.run()
+    ct = alice.ct
+    trudy = Trudy(bob)
+    return trudy.recover_plaintext(ct)
 
 
 if __name__ == "__main__":
-    challenge41()
+    print(challenge41())
