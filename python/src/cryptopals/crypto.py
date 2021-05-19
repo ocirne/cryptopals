@@ -20,10 +20,10 @@ class RSA:
     42
     >>> rsa._encrypt(rsa._decrypt(42))
     42
-    >>> rsa.verify("foo", rsa.sign("foo"))
+    >>> rsa.verify(rsa.sign("foo"))
     True
-    >>> rsa.verify("bar", rsa.sign("foo"))
-    False
+    >>> rsa.verify(rsa.sign("bar"))
+    True
     """
 
     def __init__(self, s: int = 128):
@@ -54,7 +54,8 @@ class RSA:
         return int_to_str(self._decrypt(c))
 
     def sign(self, message) -> int:
-        return self._decrypt(str_to_int(message))
+        return self._decrypt(str_to_int("0001ff" + message))
 
-    def verify(self, message, signature) -> bool:
-        return self._encrypt(signature) == str_to_int(message)
+    def verify(self, signature) -> bool:
+        message = int_to_str(self._encrypt(signature))
+        return message.startswith("0001ff")
