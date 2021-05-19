@@ -20,13 +20,17 @@ class RSA:
     42
     >>> rsa._encrypt(rsa._decrypt(42))
     42
+    >>> rsa.verify("foo", rsa.sign("foo"))
+    True
+    >>> rsa.verify("bar", rsa.sign("foo"))
+    False
     """
 
-    def __init__(self):
+    def __init__(self, s: int = 128):
         self.d = None
         while self.d is None:
-            p = random_prime()
-            q = random_prime()
+            p = random_prime(s)
+            q = random_prime(s)
             self.n = p * q
             et = (p - 1) * (q - 1)
             # public key: [e, n]
@@ -48,3 +52,9 @@ class RSA:
 
     def decrypt(self, c: int) -> str:
         return int_to_str(self._decrypt(c))
+
+    def sign(self, message) -> int:
+        return self._decrypt(str_to_int(message))
+
+    def verify(self, message, signature) -> bool:
+        return self._encrypt(signature) == str_to_int(message)

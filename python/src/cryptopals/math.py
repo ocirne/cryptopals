@@ -51,10 +51,10 @@ class MillerRabinTest:
         return not any(self._try_composite(a, d, n, s) for a in self._known_primes[:_precision_for_huge_n])
 
 
-def random_prime():
+def random_prime(s: int):
     mrt = MillerRabinTest()
     while True:
-        p = secrets.randbits(128)
+        p = secrets.randbits(s)
         if mrt.is_prime(p):
             return p
 
