@@ -1,4 +1,3 @@
-from cryptopals.math import invmod
 from cryptopals.crypto import RSA, int_to_str
 
 
@@ -37,10 +36,11 @@ class Trudy:
     def recover_plaintext(self, ct):
         assert self.bob.please_decrypt(ct) is None
         e, n = self.bob.rsa.public_key()
-        s = 4  # guaranteed random
+        # not every s has a modular inverse, this should always work
+        s, si = 2, (n + 2) // 2
         cs = (pow(s, e, n) * ct) % n
         ps = self.bob.please_decrypt(cs)
-        p = (ps * invmod(s, n)) % n
+        p = (ps * si) % n
         return int_to_str(p)
 
 
@@ -57,7 +57,3 @@ def challenge41():
     ct = alice.ct
     trudy = Trudy(bob)
     return trudy.recover_plaintext(ct)
-
-
-if __name__ == "__main__":
-    print(challenge41())
