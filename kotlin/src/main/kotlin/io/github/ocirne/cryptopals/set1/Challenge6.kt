@@ -12,8 +12,8 @@ class Challenge6(text: String) {
 
     fun decrypt(key: String): String {
         val k = key.toByteArray()
-        val p = Basics.xorCycle(content, k)
-        return String(p)
+        val pt = Basics.xorCycle(content, k)
+        return String(pt)
     }
 
     fun hammingDistance(t1: ByteArray, t2: ByteArray): Int {

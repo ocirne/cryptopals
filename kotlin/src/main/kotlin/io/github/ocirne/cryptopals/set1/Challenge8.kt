@@ -9,8 +9,8 @@ class Challenge8 {
     }
 
     private fun detectCollision(line: ByteArray): Boolean {
-        val a = line.filterIndexed { index, _ -> index % 16 == 0 }
-        val b = line.filterIndexed { index, _ -> index % 16 == 1 }
+        val a = line.filterIndexed { index, _ -> index and 0xFF == 0 }
+        val b = line.filterIndexed { index, _ -> index and 0xFF == 1 }
         return IntRange(0, 9).pairs().filter { (i, j) -> a[i] == a[j] && b[i] == b[j] }.any()
     }
 

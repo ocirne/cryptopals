@@ -5,9 +5,9 @@ import io.github.ocirne.cryptopals.Basics
 class Challenge5 {
 
     fun run(plain: String, key: String): String {
-        val p = plain.toByteArray()
+        val pt = plain.toByteArray()
         val k = key.toByteArray()
-        val c = Basics.xorCycle(p, k)
-        return Basics.encodeHexString(c)
+        val ct = Basics.xorCycle(pt, k)
+        return Basics.encodeHexString(ct)
     }
 }

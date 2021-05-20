@@ -7,11 +7,14 @@ import kotlin.experimental.xor
 class Challenge4 {
 
     private fun decrypt(secret: String): String? {
-        val s = Basics.decodeHexString(secret)
-        val mostCommonByte = s.mostCommon()
+        val ct = Basics.decodeHexString(secret)
+        val mostCommonByte = ct.mostCommon()
         val key = mostCommonByte xor ' '.toByte()
-        val plainBa = Basics.xorSingle(s, key)
-        return if (Basics.isPlausiblePlainText(plainBa, 0.33, 0.1)) String(plainBa) else null
+        val pt = Basics.xorSingle(ct, key)
+        return if (Basics.isPlausiblePlainText(pt, 0.33, 0.1))
+            String(pt)
+        else
+            null
     }
 
     fun run(secrets: List<String>): String {
