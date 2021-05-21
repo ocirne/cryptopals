@@ -9,7 +9,7 @@ class Challenge3 {
     fun run(secret: String): String {
         val ct = Basics.decodeHexString(secret)
         val mostCommonByte = ct.mostCommon()
-        val key = mostCommonByte xor ' '.toByte()
+        val key = mostCommonByte xor ' '.code.toByte()
         val pt = Basics.xorSingle(ct, key)
         return String(pt)
     }

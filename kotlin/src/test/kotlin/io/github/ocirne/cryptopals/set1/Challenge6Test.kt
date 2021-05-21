@@ -1,5 +1,6 @@
 package io.github.ocirne.cryptopals.set1
 
+import io.github.ocirne.cryptopals.Basics
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldStartWith
 import org.junit.jupiter.api.Test
@@ -22,7 +23,7 @@ internal class Challenge6Test {
         val t1 = "this is a test".toByteArray()
         val t2 = "wokka wokka!!!".toByteArray()
 
-        challenge6.hammingDistance(t1, t2) shouldBe 37
+        Basics.hammingDistance(t1, t2) shouldBe 37
     }
 
     @Test

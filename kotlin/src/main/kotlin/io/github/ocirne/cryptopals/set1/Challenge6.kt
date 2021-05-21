@@ -2,6 +2,7 @@ package io.github.ocirne.cryptopals.set1
 
 import io.github.ocirne.cryptopals.Basics
 import io.github.ocirne.cryptopals.Basics.Extensions.mostCommon
+import io.github.ocirne.cryptopals.Basics.hammingDistance
 import kotlin.experimental.xor
 
 import io.github.ocirne.cryptopals.Basics.mostCommon
@@ -14,13 +15,6 @@ class Challenge6(text: String) {
         val k = key.toByteArray()
         val pt = Basics.xorCycle(content, k)
         return String(pt)
-    }
-
-    fun hammingDistance(t1: ByteArray, t2: ByteArray): Int {
-        return t1.zip(t2)
-            .map { (x, y) -> x xor y }
-            .map { x -> x.toString(2).count { c -> c == '1' } }
-            .sum()
     }
 
     fun cheapFactor(n: Int): List<Int> {
@@ -65,7 +59,7 @@ class Challenge6(text: String) {
 
     private fun findKeyLetter(transposed_block: ByteArray): Byte {
         val mostCommonByte = transposed_block.mostCommon()
-        return mostCommonByte xor ' '.toByte()
+        return mostCommonByte xor ' '.code.toByte()
     }
 
     fun findKey(keySize: Int): String {

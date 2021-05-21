@@ -9,7 +9,7 @@ class Challenge4 {
     private fun decrypt(secret: String): String? {
         val ct = Basics.decodeHexString(secret)
         val mostCommonByte = ct.mostCommon()
-        val key = mostCommonByte xor ' '.toByte()
+        val key = mostCommonByte xor ' '.code.toByte()
         val pt = Basics.xorSingle(ct, key)
         return if (Basics.isPlausiblePlainText(pt, 0.33, 0.1))
             String(pt)
