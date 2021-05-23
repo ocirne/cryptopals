@@ -32,6 +32,15 @@ java {
     targetCompatibility = JavaVersion.VERSION_11
 }
 
+sourceSets {
+    main {
+        java.srcDir("src/main/kotlin")
+    }
+    test {
+        java.srcDir("src/test/kotlin")
+    }
+}
+
 tasks {
     test {
         testLogging.showExceptions = true
