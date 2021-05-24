@@ -67,29 +67,17 @@ internal class DigestsTest {
                 "effcdf6ae5eb2fa2d27416d5f184df9c259a7c79"
         hmacSha1(decodeHexString("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"), 0xdd.toByte().repeat(50)) shouldBe
                 "125d7342b9ac11cd91a39af48aa17b4f63f175d3"
-        hmacSha1(
-            decodeHexString("0102030405060708090a0b0c0d0e0f10111213141516171819"),
-            0xcd.toByte().repeat(50)
-        ) shouldBe
+        hmacSha1(decodeHexString("0102030405060708090a0b0c0d0e0f10111213141516171819"), 0xcd.toByte().repeat(50)) shouldBe
                 "4c9007f4026250c6bc8414f9bf50c86c2d7235da"
-        hmacSha1(
-            decodeHexString("0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c"),
-            "Test With Truncation".toByteArray()
-        ) shouldBe
+        hmacSha1(decodeHexString("0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c"), "Test With Truncation".toByteArray()) shouldBe
                 "4c1a03424b55e07fe7f27be1d58bb9324a9a5a04"
         hmacSha1(0xaa.toByte().repeat(80), "Test Using Larger Than Block-Size Key - Hash Key First".toByteArray()) shouldBe
                 "aa4ae5e15272d00e95705637ce8a3b55ed402112"
-        hmacSha1(
-            0xaa.toByte().repeat(80),
-            "Test Using Larger Than Block-Size Key and Larger Than One Block-Size Data".toByteArray()
-        ) shouldBe
+        hmacSha1(0xaa.toByte().repeat(80), "Test Using Larger Than Block-Size Key and Larger Than One Block-Size Data".toByteArray()) shouldBe
                 "e8e99d0f45237d786d6bbaa7965c7808bbff1a91"
         hmacSha1(0xaa.toByte().repeat(80), "Test Using Larger Than Block-Size Key - Hash Key First".toByteArray()) shouldBe
                 "aa4ae5e15272d00e95705637ce8a3b55ed402112"
-        hmacSha1(
-            0xaa.toByte().repeat(80),
-            "Test Using Larger Than Block-Size Key and Larger Than One Block-Size Data".toByteArray()
-        ) shouldBe
+        hmacSha1(0xaa.toByte().repeat(80), "Test Using Larger Than Block-Size Key and Larger Than One Block-Size Data".toByteArray()) shouldBe
                 "e8e99d0f45237d786d6bbaa7965c7808bbff1a91"
     }
 
@@ -103,19 +91,13 @@ internal class DigestsTest {
                 "750c783e6ab0b503eaa86e310a5db738"
         hmacMd5(decodeHexString("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"), 0xdd.toByte().repeat(50)) shouldBe
                 "56be34521d144c88dbb8c733f0e8b3f6"
-        hmacMd5(
-            decodeHexString("0102030405060708090a0b0c0d0e0f10111213141516171819"),
-            0xcd.toByte().repeat(50)
-        ) shouldBe
+        hmacMd5(decodeHexString("0102030405060708090a0b0c0d0e0f10111213141516171819"), 0xcd.toByte().repeat(50)) shouldBe
                 "697eaf0aca3a3aea3a75164746ffaa79"
         hmacMd5(decodeHexString("0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c"), "Test With Truncation".toByteArray()) shouldBe
                 "56461ef2342edc00f9bab995690efd4c"
         hmacMd5(0xaa.toByte().repeat(80), "Test Using Larger Than Block-Size Key - Hash Key First".toByteArray()) shouldBe
                 "6b1ab7fe4bd7bf8f0b62e6ce61b9d0cd"
-        hmacMd5(
-            0xaa.toByte().repeat(80),
-            "Test Using Larger Than Block-Size Key and Larger Than One Block-Size Data".toByteArray()
-        ) shouldBe
+        hmacMd5(0xaa.toByte().repeat(80), "Test Using Larger Than Block-Size Key and Larger Than One Block-Size Data".toByteArray()) shouldBe
                 "6f630fad67cda0ee1fb1f562db3aa53e"
     }
 
@@ -124,7 +106,6 @@ internal class DigestsTest {
     }
 
     fun hmacMd5(key: String, message: String): String {
-        println("orig orig " + message.length + " $message")
         return hmacMd5(key.toByteArray(), message.toByteArray())
     }
 

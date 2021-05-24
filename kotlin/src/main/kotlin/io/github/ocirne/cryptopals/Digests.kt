@@ -73,7 +73,7 @@ class SHA1(
         return msg
     }
 
-    private fun _digest(message: ByteArray): Array<UInt> {
+    override fun digest(message: ByteArray): ByteArray {
         // Initialize variables:
         var h0 = i0
         var h1 = i1
@@ -134,12 +134,7 @@ class SHA1(
             h3 += d
             h4 += e
         }
-        return arrayOf(h0, h1, h2, h3, h4)
-    }
-
-    override fun digest(message: ByteArray): ByteArray {
-        val hh = _digest(message)
-        return hh.map { h -> h.toUByteArray(BIG_ENDIAN) }.flatten().toUByteArray().asByteArray()
+        return arrayOf(h0, h1, h2, h3, h4).map { h -> h.toUByteArray(BIG_ENDIAN) }.flatten().toUByteArray().asByteArray()
     }
 
     override fun hexdigest(message: ByteArray): String {
@@ -159,23 +154,19 @@ class MD5(
 ) : Digest {
 
     private fun preprocess(message: ByteArray): UByteArray {
-  //      println("orig " + encodeHexString(message) + ", " + message.size)
         var msg = message.toUByteArray()
         // ml = message length in bits
         val messageLengthByteArray = (msg.size + pa).toULong()
-  //      println("ml $messageLengthByteArray, pa $pa")
         // Pre - processing: adding a single 1 bit
         msg += 0x80.toUByte()
         // Pre - processing: padding with zeros
         msg += "\u0000".repeat(((56u - (messageLengthByteArray + 1u) and 0x3Fu) and 0x3Fu).toInt()).toUByteArray()
-  //      println("msg " + encodeHexString(msg.toByteArray()))
         // append original length in bits mod 2**64 to message
         msg += (messageLengthByteArray * 8u).toUByteArray(LITTLE_ENDIAN)
-  //      println(encodeHexString(msg.toByteArray()))
         return msg
     }
 
-    fun _digest(message: ByteArray): Array<UInt> {
+    override fun digest(message: ByteArray): ByteArray {
         // s specifies the per-round shift amounts
         val s = listOf(7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22) +
                 listOf(5, 9, 14, 20, 5, 9, 14, 20, 5, 9, 14, 20, 5, 9, 14, 20) +
@@ -196,7 +187,6 @@ class MD5(
         preprocessedMessage.asIterable().chunked(64).forEach { chunk ->
             // break chunk into sixteen 32-bit words M[j], 0 ≤ j ≤ 15
             val m = chunk.chunked(4).map { fourByteArray -> fourByteArray.toUInt(LITTLE_ENDIAN) }.toMutableList()
-  //          println("m $m")
             // Initialize hash value for this chunk:
             var a = a0
             var b = b0
@@ -227,17 +217,12 @@ class MD5(
                     }
                     else -> throw IllegalStateException()
                 }
- //               println("$i $f $g")
                 // Be wary of the below definitions of a,b,c,d
-  //              println("xxx" + a.toString() + " " + k[i] + " " + m[g.toInt()])
                 f += a + k[i] + m[g.toInt()]  // M[g] must be a 32-bits block
                 a = d
                 d = c
                 c = b
-//                println("bb " + b.toString() + " $f " + s[i] + " " + f.rotateLeft(s[i]))
                 b += f.rotateLeft(s[i])
- //               println("ba " + b.toString() + " $f " + s[i] + " " + f.rotateLeft(s[i]))
-//                println("$a $b $c $d $i $f $g")
             }
 
             // Add this chunk's hash to result so far:
@@ -246,16 +231,7 @@ class MD5(
             c0 += c
             d0 += d
         }
-//        println("abcd $a0 $b0 $c0 $d0")
-//        py    3649838548 78774415 2550759657 2118318316
-
-        return arrayOf(a0, b0, c0, d0)
-    }
-
-
-    override fun digest(message: ByteArray): ByteArray {
-        val hh = _digest(message)
-        return hh.map { h -> h.toUByteArray(LITTLE_ENDIAN) }.flatten().toUByteArray().asByteArray()
+        return arrayOf(a0, b0, c0, d0).map { h -> h.toUByteArray(LITTLE_ENDIAN) }.flatten().toUByteArray().asByteArray()
     }
 
     override fun hexdigest(message: ByteArray): String {
@@ -281,9 +257,6 @@ fun hmac(origKey: ByteArray, message: ByteArray, mac: Digest, blockSize: Int): S
     val oKeyPad = xor(key, 0x5c.toByte().repeat(blockSize))  // Outer padded key
     val iKeyPad = xor(key, 0x36.toByte().repeat(blockSize))  // Inner padded key
 
-    println("iii " + encodeHexString(iKeyPad))
-    println("ooo " + encodeHexString(oKeyPad))
-    println("msg " + encodeHexString(message))
     return mac.hexdigest(oKeyPad + mac.digest(iKeyPad + message))
 }
 

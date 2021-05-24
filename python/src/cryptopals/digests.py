@@ -162,7 +162,7 @@ class MD5:
         padding = b"\x80"
         # Pre-processing: padding with zeros
         padding += b"\x00" * ((56 - (ml + 1) & 0x3F) & 0x3F)
-        # append original length in bits mod 264 to message
+        # append original length in bits mod 2**64 to message
         padding += ((ml * 8) & 0xFFFFFFFFFFFFFFFF).to_bytes(8, byteorder="little")
         return bytes(padding)
 
