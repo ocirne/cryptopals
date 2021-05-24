@@ -26,22 +26,28 @@ private fun List<UByte>.toUInt(endian: ByteOrder): UInt =
         else -> throw UnsupportedOperationException("Unsupported endianness $endian")
     }
 
+@ExperimentalStdlibApi
+@ExperimentalUnsignedTypes
 private fun String.toUByteArray(): UByteArray =
     this.toByteArray().toUByteArray()
 
+@ExperimentalStdlibApi
+@ExperimentalUnsignedTypes
 private fun UInt.toUByteArray(endian: ByteOrder): UByteArray =
     when (endian) {
-        BIG_ENDIAN -> (24 downTo 0 step 8).map { b -> (this shr b).toUByte() }.toUByteArray()
-        LITTLE_ENDIAN -> (0..3).map { b -> (this shr (8*b)).toUByte() }.toUByteArray()
+        BIG_ENDIAN -> (3 downTo 0)
+        LITTLE_ENDIAN -> (0..3)
         else -> throw UnsupportedOperationException("Unsupported endianness $endian")
-    }
+    }.map { b -> (this shr (8 * b)).toUByte() }.toUByteArray()
 
+@ExperimentalStdlibApi
+@ExperimentalUnsignedTypes
 private fun ULong.toUByteArray(endian: ByteOrder): UByteArray =
     when (endian) {
-        BIG_ENDIAN -> (56 downTo 0 step 8).map { b -> (this shr b).toUByte() }.toUByteArray()
-        LITTLE_ENDIAN -> (0..7).map { b -> (this shr (8 * b)).toUByte() }.toUByteArray()
+        BIG_ENDIAN -> (7 downTo 0)
+        LITTLE_ENDIAN -> (0..7)
         else -> throw UnsupportedOperationException("Unsupported endianness $endian")
-    }
+    }.map { b -> (this shr (8 * b)).toUByte() }.toUByteArray()
 
 /**
  * see
@@ -51,18 +57,18 @@ private fun ULong.toUByteArray(endian: ByteOrder): UByteArray =
 @ExperimentalStdlibApi
 @ExperimentalUnsignedTypes
 class SHA1(
-    val i0: UInt = 0x67452301u,
-    val i1: UInt = 0xEFCDAB89u,
-    val i2: UInt = 0x98BADCFEu,
-    val i3: UInt = 0x10325476u,
-    val i4: UInt = 0xC3D2E1F0u,
-    val pa: Int = 0
+    private val i0: UInt = 0x67452301u,
+    private val i1: UInt = 0xEFCDAB89u,
+    private val i2: UInt = 0x98BADCFEu,
+    private val i3: UInt = 0x10325476u,
+    private val i4: UInt = 0xC3D2E1F0u,
+    private val pa: Int = 0
 ) : Digest {
 
     private fun preprocess(message: ByteArray): UByteArray {
         var msg = message.toUByteArray()
         // ml = message length in bits, 64 bit quantity
-        val messageLengthByteArray = msg.size.toULong()
+        val messageLengthByteArray = (msg.size + pa).toULong()
         // append the bit '1' to the message e.g. by adding 0x80 if message length is a multiple of 8 bits.
         msg += 0x80.toUByte()
         // append 0 ≤ k < 512 bits '0', such that the resulting message length in bits is congruent to −64 ≡ 448 (mod 512)
@@ -146,11 +152,11 @@ class SHA1(
 @ExperimentalStdlibApi
 @ExperimentalUnsignedTypes
 class MD5(
-    val a: UInt = 0x67452301u,
-    val b: UInt = 0xEFCDAB89u,
-    val c: UInt = 0x98BADCFEu,
-    val d: UInt = 0x10325476u,
-    val pa: Int = 0
+    private val a: UInt = 0x67452301u,
+    private val b: UInt = 0xEFCDAB89u,
+    private val c: UInt = 0x98BADCFEu,
+    private val d: UInt = 0x10325476u,
+    private val pa: Int = 0
 ) : Digest {
 
     private fun preprocess(message: ByteArray): UByteArray {
