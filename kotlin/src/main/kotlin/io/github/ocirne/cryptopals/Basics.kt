@@ -9,7 +9,7 @@ import kotlin.experimental.xor
 object Basics {
 
     object Extensions {
-        fun Byte.repeat(n: Int) = IntRange(0, n).map { this }.toByteArray()
+        fun Byte.repeat(n: Int) = IntRange(1, n).map { this }.toByteArray()
 
         fun ByteArray.cycle() = generateSequence(0) { (it + 1) % this.size }.map { this[it] }.asIterable()
 

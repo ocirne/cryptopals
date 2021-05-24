@@ -3,6 +3,9 @@ package io.github.ocirne.cryptopals
 import io.github.ocirne.cryptopals.Basics.Extensions.repeat
 import io.github.ocirne.cryptopals.Basics.encodeHexString
 import io.github.ocirne.cryptopals.Basics.xor
+import java.nio.ByteOrder
+import java.nio.ByteOrder.BIG_ENDIAN
+import java.nio.ByteOrder.LITTLE_ENDIAN
 import kotlin.math.abs
 import kotlin.math.sin
 
@@ -16,27 +19,27 @@ interface Digest {
     fun hexdigest(message: String): String = hexdigest(message.toByteArray())
 }
 
-private fun List<UByte>.toUInt(endian: String): UInt =
+private fun List<UByte>.toUInt(endian: ByteOrder): UInt =
     when (endian) {
-        "big" -> (this[0].toUInt() shl 24) or (this[1].toUInt() shl 16) or (this[2].toUInt() shl 8) or this[3].toUInt()
-        "little" -> (this[3].toUInt() shl 24) or (this[2].toUInt() shl 16) or (this[1].toUInt() shl 8) or this[0].toUInt()
+        BIG_ENDIAN -> (this[0].toUInt() shl 24) or (this[1].toUInt() shl 16) or (this[2].toUInt() shl 8) or this[3].toUInt()
+        LITTLE_ENDIAN -> (this[3].toUInt() shl 24) or (this[2].toUInt() shl 16) or (this[1].toUInt() shl 8) or this[0].toUInt()
         else -> throw UnsupportedOperationException("Unsupported endianness $endian")
     }
 
 private fun String.toUByteArray(): UByteArray =
     this.toByteArray().toUByteArray()
 
-private fun UInt.toUByteArray(endian: String): UByteArray =
+private fun UInt.toUByteArray(endian: ByteOrder): UByteArray =
     when (endian) {
-        "big" -> (24 downTo 0 step 8).map { b -> (this shr b).toUByte() }.toUByteArray()
-        "little" -> (0..3).map { b -> (this shr (8*b)).toUByte() }.toUByteArray()
+        BIG_ENDIAN -> (24 downTo 0 step 8).map { b -> (this shr b).toUByte() }.toUByteArray()
+        LITTLE_ENDIAN -> (0..3).map { b -> (this shr (8*b)).toUByte() }.toUByteArray()
         else -> throw UnsupportedOperationException("Unsupported endianness $endian")
     }
 
-private fun ULong.toUByteArray(endian: String): UByteArray =
+private fun ULong.toUByteArray(endian: ByteOrder): UByteArray =
     when (endian) {
-        "big" -> (56 downTo 0 step 8).map { b -> (this shr b).toUByte() }.toUByteArray()
-        "little" -> (0..7).map { b -> (this shr (8 * b)).toUByte() }.toUByteArray()
+        BIG_ENDIAN -> (56 downTo 0 step 8).map { b -> (this shr b).toUByte() }.toUByteArray()
+        LITTLE_ENDIAN -> (0..7).map { b -> (this shr (8 * b)).toUByte() }.toUByteArray()
         else -> throw UnsupportedOperationException("Unsupported endianness $endian")
     }
 
@@ -66,7 +69,7 @@ class SHA1(
         msg += "\u0000".repeat(((56u - (messageLengthByteArray + 1u) and 0x3Fu) and 0x3Fu).toInt()).toUByteArray()
         // append ml, the original message length, as a 64-bit big-endian integer. Thus, the total length is a multiple of 512 bits.
         // ml - 64 bit
-        msg += (messageLengthByteArray * 8u).toUByteArray("big")
+        msg += (messageLengthByteArray * 8u).toUByteArray(BIG_ENDIAN)
         return msg
     }
 
@@ -82,7 +85,7 @@ class SHA1(
         // Process the message in successive 512-bit chunks:
         preprocessedMessage.asIterable().chunked(64).forEach { chunk ->
             // break chunk into sixteen 32-bit big-endian words w[i], 0 ≤ i ≤ 15
-            val w = chunk.chunked(4).map { fourByteArray -> fourByteArray.toUInt("big") }.toMutableList()
+            val w = chunk.chunked(4).map { fourByteArray -> fourByteArray.toUInt(BIG_ENDIAN) }.toMutableList()
             // Message schedule: extend the sixteen 32-bit words into eighty 32-bit words:
             for (i in 16..79) {
                 w += (w[i - 3] xor w[i - 8] xor w[i - 14] xor w[i - 16]).rotateLeft(1)
@@ -136,7 +139,7 @@ class SHA1(
 
     override fun digest(message: ByteArray): ByteArray {
         val hh = _digest(message)
-        return hh.map { h -> h.toUByteArray("big") }.flatten().toUByteArray().asByteArray()
+        return hh.map { h -> h.toUByteArray(BIG_ENDIAN) }.flatten().toUByteArray().asByteArray()
     }
 
     override fun hexdigest(message: ByteArray): String {
@@ -167,7 +170,7 @@ class MD5(
         msg += "\u0000".repeat(((56u - (messageLengthByteArray + 1u) and 0x3Fu) and 0x3Fu).toInt()).toUByteArray()
   //      println("msg " + encodeHexString(msg.toByteArray()))
         // append original length in bits mod 2**64 to message
-        msg += (messageLengthByteArray * 8u).toUByteArray("little")
+        msg += (messageLengthByteArray * 8u).toUByteArray(LITTLE_ENDIAN)
   //      println(encodeHexString(msg.toByteArray()))
         return msg
     }
@@ -192,7 +195,7 @@ class MD5(
         // Process the message in successive 512-bit chunks:
         preprocessedMessage.asIterable().chunked(64).forEach { chunk ->
             // break chunk into sixteen 32-bit words M[j], 0 ≤ j ≤ 15
-            val m = chunk.chunked(4).map { fourByteArray -> fourByteArray.toUInt("little") }.toMutableList()
+            val m = chunk.chunked(4).map { fourByteArray -> fourByteArray.toUInt(LITTLE_ENDIAN) }.toMutableList()
   //          println("m $m")
             // Initialize hash value for this chunk:
             var a = a0
@@ -252,7 +255,7 @@ class MD5(
 
     override fun digest(message: ByteArray): ByteArray {
         val hh = _digest(message)
-        return hh.map { h -> h.toUByteArray("little") }.flatten().toUByteArray().asByteArray()
+        return hh.map { h -> h.toUByteArray(LITTLE_ENDIAN) }.flatten().toUByteArray().asByteArray()
     }
 
     override fun hexdigest(message: ByteArray): String {
@@ -273,11 +276,14 @@ fun hmac(origKey: ByteArray, message: ByteArray, mac: Digest, blockSize: Int): S
 
     // Keys shorter than blockSize are padded to blockSize by padding with zeros on the right
     if (key.size < blockSize) {
-        key += 0x00.toByte().repeat((blockSize - key.size))  // Pad key with zeros to make it blockSize ByteArray long
+        key += 0x00.toByte().repeat(blockSize - key.size)  // Pad key with zeros to make it blockSize ByteArray long
     }
     val oKeyPad = xor(key, 0x5c.toByte().repeat(blockSize))  // Outer padded key
     val iKeyPad = xor(key, 0x36.toByte().repeat(blockSize))  // Inner padded key
 
+    println("iii " + encodeHexString(iKeyPad))
+    println("ooo " + encodeHexString(oKeyPad))
+    println("msg " + encodeHexString(message))
     return mac.hexdigest(oKeyPad + mac.digest(iKeyPad + message))
 }
 
