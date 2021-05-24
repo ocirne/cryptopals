@@ -14,6 +14,8 @@ object Basics {
         fun ByteArray.cycle() = generateSequence(0) { (it + 1) % this.size }.map { this[it] }.asIterable()
 
         fun ByteArray.mostCommon() = mostCommon(this.asList())
+
+        fun ByteArray.padding(blockSize: Int) = padding(this, blockSize)
     }
 
     fun decodeHexString(hexString: String): ByteArray {
