@@ -16,18 +16,29 @@ interface Digest {
     fun hexdigest(message: String): String = hexdigest(message.toByteArray())
 }
 
-private fun List<UByte>.concatToUInt(): UInt =
-    (this[0].toUInt() shl 24) or (this[1].toUInt() shl 16) or (this[2].toUInt() shl 8) or this[3].toUInt()
+private fun List<UByte>.toUInt(endian: String): UInt =
+    when (endian) {
+        "big" -> (this[0].toUInt() shl 24) or (this[1].toUInt() shl 16) or (this[2].toUInt() shl 8) or this[3].toUInt()
+        "little" -> (this[3].toUInt() shl 24) or (this[2].toUInt() shl 16) or (this[1].toUInt() shl 8) or this[0].toUInt()
+        else -> throw UnsupportedOperationException("Unsupported endianness $endian")
+    }
 
 private fun String.toUByteArray(): UByteArray =
     this.toByteArray().toUByteArray()
 
-private fun UInt.splitToUByteArray(): UByteArray =
-    (24 downTo 0 step 8).map { b -> (this shr b).toUByte() }.toUByteArray()
+private fun UInt.toUByteArray(endian: String): UByteArray =
+    when (endian) {
+        "big" -> (24 downTo 0 step 8).map { b -> (this shr b).toUByte() }.toUByteArray()
+        "little" -> (0..3).map { b -> (this shr (8*b)).toUByte() }.toUByteArray()
+        else -> throw UnsupportedOperationException("Unsupported endianness $endian")
+    }
 
-private fun ULong.splitToUByteArray(): UByteArray =
-    (56 downTo 0 step 8).map { b -> (this shr b).toUByte() }.toUByteArray()
-
+private fun ULong.toUByteArray(endian: String): UByteArray =
+    when (endian) {
+        "big" -> (56 downTo 0 step 8).map { b -> (this shr b).toUByte() }.toUByteArray()
+        "little" -> (0..7).map { b -> (this shr (8 * b)).toUByte() }.toUByteArray()
+        else -> throw UnsupportedOperationException("Unsupported endianness $endian")
+    }
 
 /**
  * see
@@ -55,7 +66,7 @@ class SHA1(
         msg += "\u0000".repeat(((56u - (messageLengthByteArray + 1u) and 0x3Fu) and 0x3Fu).toInt()).toUByteArray()
         // append ml, the original message length, as a 64-bit big-endian integer. Thus, the total length is a multiple of 512 bits.
         // ml - 64 bit
-        msg += (messageLengthByteArray * 8u).splitToUByteArray()
+        msg += (messageLengthByteArray * 8u).toUByteArray("big")
         return msg
     }
 
@@ -71,7 +82,7 @@ class SHA1(
         // Process the message in successive 512-bit chunks:
         preprocessedMessage.asIterable().chunked(64).forEach { chunk ->
             // break chunk into sixteen 32-bit big-endian words w[i], 0 ≤ i ≤ 15
-            val w = chunk.chunked(4).map { fourByteArray -> fourByteArray.concatToUInt() }.toMutableList()
+            val w = chunk.chunked(4).map { fourByteArray -> fourByteArray.toUInt("big") }.toMutableList()
             // Message schedule: extend the sixteen 32-bit words into eighty 32-bit words:
             for (i in 16..79) {
                 w += (w[i - 3] xor w[i - 8] xor w[i - 14] xor w[i - 16]).rotateLeft(1)
@@ -125,7 +136,7 @@ class SHA1(
 
     override fun digest(message: ByteArray): ByteArray {
         val hh = _digest(message)
-        return hh.map { h -> h.splitToUByteArray() }.flatten().toUByteArray().asByteArray()
+        return hh.map { h -> h.toUByteArray("big") }.flatten().toUByteArray().asByteArray()
     }
 
     override fun hexdigest(message: ByteArray): String {
@@ -145,15 +156,19 @@ class MD5(
 ) : Digest {
 
     private fun preprocess(message: ByteArray): UByteArray {
+  //      println("orig " + encodeHexString(message) + ", " + message.size)
         var msg = message.toUByteArray()
         // ml = message length in bits
         val messageLengthByteArray = (msg.size + pa).toULong()
+  //      println("ml $messageLengthByteArray, pa $pa")
         // Pre - processing: adding a single 1 bit
         msg += 0x80.toUByte()
         // Pre - processing: padding with zeros
         msg += "\u0000".repeat(((56u - (messageLengthByteArray + 1u) and 0x3Fu) and 0x3Fu).toInt()).toUByteArray()
-        // append original length in bits mod 264 to message
-        msg += (messageLengthByteArray * 8u).splitToUByteArray()
+  //      println("msg " + encodeHexString(msg.toByteArray()))
+        // append original length in bits mod 2**64 to message
+        msg += (messageLengthByteArray * 8u).toUByteArray("little")
+  //      println(encodeHexString(msg.toByteArray()))
         return msg
     }
 
@@ -165,7 +180,7 @@ class MD5(
                 listOf(6, 10, 15, 21, 6, 10, 15, 21, 6, 10, 15, 21, 6, 10, 15, 21)
 
         // Use binary integer part of the sines of integers (Radians) as constants:
-        val k = (0u..63u).map { i -> ((2 shl 32) * abs(sin(i.toDouble() + 1.0))).toUInt() }
+        val k = (0..63).map { i -> ((1L shl 32) * abs(sin((i+1).toDouble()))).toUInt() }
 
         // Initialize variables:
         var a0 = a
@@ -177,7 +192,8 @@ class MD5(
         // Process the message in successive 512-bit chunks:
         preprocessedMessage.asIterable().chunked(64).forEach { chunk ->
             // break chunk into sixteen 32-bit words M[j], 0 ≤ j ≤ 15
-            val m = chunk.chunked(4).map { fourByteArray -> fourByteArray.concatToUInt() }.toMutableList()
+            val m = chunk.chunked(4).map { fourByteArray -> fourByteArray.toUInt("little") }.toMutableList()
+  //          println("m $m")
             // Initialize hash value for this chunk:
             var a = a0
             var b = b0
@@ -208,12 +224,17 @@ class MD5(
                     }
                     else -> throw IllegalStateException()
                 }
+ //               println("$i $f $g")
                 // Be wary of the below definitions of a,b,c,d
+  //              println("xxx" + a.toString() + " " + k[i] + " " + m[g.toInt()])
                 f += a + k[i] + m[g.toInt()]  // M[g] must be a 32-bits block
                 a = d
                 d = c
                 c = b
+//                println("bb " + b.toString() + " $f " + s[i] + " " + f.rotateLeft(s[i]))
                 b += f.rotateLeft(s[i])
+ //               println("ba " + b.toString() + " $f " + s[i] + " " + f.rotateLeft(s[i]))
+//                println("$a $b $c $d $i $f $g")
             }
 
             // Add this chunk's hash to result so far:
@@ -222,12 +243,16 @@ class MD5(
             c0 += c
             d0 += d
         }
+//        println("abcd $a0 $b0 $c0 $d0")
+//        py    3649838548 78774415 2550759657 2118318316
+
         return arrayOf(a0, b0, c0, d0)
     }
 
+
     override fun digest(message: ByteArray): ByteArray {
         val hh = _digest(message)
-        return hh.map { h -> h.splitToUByteArray() }.flatten().toUByteArray().asByteArray()
+        return hh.map { h -> h.toUByteArray("little") }.flatten().toUByteArray().asByteArray()
     }
 
     override fun hexdigest(message: ByteArray): String {
