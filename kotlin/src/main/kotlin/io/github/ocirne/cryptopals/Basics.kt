@@ -9,13 +9,26 @@ import kotlin.experimental.xor
 object Basics {
 
     object Extensions {
-        fun Byte.repeat(n: Int) = IntRange(1, n).map { this }.toByteArray()
+        fun Byte.repeat(n: Int) =
+            IntRange(1, n).map { this }.toByteArray()
 
-        fun ByteArray.cycle() = generateSequence(0) { (it + 1) % this.size }.map { this[it] }.asIterable()
+        fun ByteArray.cycle() =
+            generateSequence(0) { (it + 1) % this.size }.map { this[it] }.asIterable()
 
-        fun ByteArray.mostCommon() = mostCommon(this.asList())
+        fun ByteArray.mostCommon() =
+            mostCommon(this.asList())
 
-        fun ByteArray.padding(blockSize: Int) = padding(this, blockSize)
+        fun ByteArray.padding(blockSize: Int) =
+            padding(this, blockSize)
+
+        fun ByteArray.chunked(blockSize: Int) =
+            this.asIterable().chunked(blockSize).map { chunk -> chunk.toByteArray() }
+
+        fun List<ByteArray>.concatenate(): ByteArray {
+            var result = byteArrayOf()
+            this.forEach { ba -> result += ba }
+            return result
+        }
     }
 
     fun decodeHexString(hexString: String): ByteArray {
@@ -91,10 +104,10 @@ object Basics {
     class InvalidPaddingException(): Exception("Invalid padding")
 
     fun stripPadding(plaintext: ByteArray): ByteArray {
-        val c = plaintext[-1]
-        val t = plaintext.sliceArray(0..plaintext.size-c)
+        val c = plaintext[plaintext.size-1]
+        val t = plaintext.sliceArray(0 until plaintext.size-c)
         val s = plaintext.sliceArray(plaintext.size-c until plaintext.size)
-        if (s.contentEquals(c.repeat(s.size)) && (t.isNotEmpty() || t[-1] != c)) {
+        if (s.contentEquals(c.repeat(s.size)) && (t.isNotEmpty() || t[t.size-1] != c)) {
             return t
         }
         throw InvalidPaddingException ()
