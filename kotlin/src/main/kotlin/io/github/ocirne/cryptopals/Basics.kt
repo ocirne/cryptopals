@@ -101,15 +101,15 @@ object Basics {
         return plaintext + byteArrayOf(padLength.toByte()).cycle().take(padLength)
     }
 
-    class InvalidPaddingException(): Exception("Invalid padding")
+    class InvalidPaddingException: Exception("Invalid padding")
 
     fun stripPadding(plaintext: ByteArray): ByteArray {
         val c = plaintext[plaintext.size-1]
         val t = plaintext.sliceArray(0 until plaintext.size-c)
         val s = plaintext.sliceArray(plaintext.size-c until plaintext.size)
-        if (s.contentEquals(c.repeat(s.size)) && (t.isNotEmpty() || t[t.size-1] != c)) {
+        if (s.contentEquals(c.repeat(s.size)) && (t.isEmpty() || t[t.size-1] != c)) {
             return t
         }
-        throw InvalidPaddingException ()
+        throw InvalidPaddingException()
     }
 }

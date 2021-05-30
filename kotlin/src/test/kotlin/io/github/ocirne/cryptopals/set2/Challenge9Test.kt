@@ -9,26 +9,40 @@ internal class Challenge9Test {
 
     @Test
     fun `can pad example message`() {
-        val padded = wrapChallenge9("YELLOW SUBMARINE", 20)
-        padded shouldBe "YELLOW SUBMARINE" + String(0x04.toByte().repeat(4))
+        val padded = wrapPadding("YELLOW SUBMARINE", 20)
+        padded shouldBe "YELLOW SUBMARINE\u0004\u0004\u0004\u0004"
         padded.length shouldBe 20
     }
 
     @Test
     fun `can pad example with another blocksize`() {
-        val padded = wrapChallenge9("YELLOW SUBMARINE", 18)
-        padded shouldBe "YELLOW SUBMARINE" + String(0x02.toByte().repeat(2))
+        val padded = wrapPadding("YELLOW SUBMARINE", 18)
+        padded shouldBe "YELLOW SUBMARINE\u0002\u0002"
         padded.length shouldBe 18
     }
 
     @Test
     fun `can pad with message length exactly block size`() {
-        val padded = wrapChallenge9("FOO", 3)
-        padded shouldBe "FOO" + String(0x03.toByte().repeat(3))
+        val padded = wrapPadding("FOO", 3)
+        padded shouldBe "FOO\u0003\u0003\u0003"
         padded.length shouldBe 6
     }
 
-    private fun wrapChallenge9(message: String, blockSize: Int): String {
+    @Test
+    fun `can pad example from challenge 15`() {
+        val padded = wrapPadding("ICE ICE BABY", 16)
+        padded shouldBe "ICE ICE BABY\u0004\u0004\u0004\u0004"
+        padded.length shouldBe 16
+    }
+
+    @Test
+    fun `can pad example from challenge 15b`() {
+        val padded = wrapPadding("ICE ICE BABY", 20)
+        padded shouldBe "ICE ICE BABY\u0008\u0008\u0008\u0008\u0008\u0008\u0008\u0008"
+        padded.length shouldBe 20
+    }
+
+    private fun wrapPadding(message: String, blockSize: Int): String {
         return message.toByteArray().padding(blockSize).decodeToString()
     }
 }
