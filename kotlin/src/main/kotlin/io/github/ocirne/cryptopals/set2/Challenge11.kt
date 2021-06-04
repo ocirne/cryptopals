@@ -29,7 +29,6 @@ class Challenge11Oracle(private val modeForTesting: String = "RANDOM"): Oracle {
         }
         return aes.encrypt(padded)
     }
-
 }
 
 fun detectMode(oracle: Oracle): String {
