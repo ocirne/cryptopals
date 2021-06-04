@@ -1,7 +1,5 @@
 package io.github.ocirne.cryptopals.set2
 
-import Challenge12
-import Challenge12Oracle
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 
