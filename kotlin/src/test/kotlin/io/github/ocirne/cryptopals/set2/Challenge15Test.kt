@@ -3,7 +3,6 @@ package io.github.ocirne.cryptopals.set2
 import io.github.ocirne.cryptopals.Basics
 import io.github.ocirne.cryptopals.Basics.stripPadding
 import io.kotest.assertions.throwables.shouldThrow
-import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 
