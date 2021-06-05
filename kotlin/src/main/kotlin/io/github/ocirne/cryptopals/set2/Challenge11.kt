@@ -1,7 +1,6 @@
 package io.github.ocirne.cryptopals.set2
 
 import io.github.ocirne.cryptopals.Basics.Extensions.repeat
-import io.github.ocirne.cryptopals.Basics.padding
 import io.github.ocirne.cryptopals.Oracle
 import io.github.ocirne.cryptopals.crypto.AES
 import kotlin.random.Random
@@ -11,7 +10,7 @@ class Challenge11Oracle(private val modeForTesting: String = "RANDOM"): Oracle {
     override fun encrypt(pt: ByteArray): ByteArray {
         val prefix = Random.nextBytes(Random.nextInt(5, 10))
         val suffix = Random.nextBytes(Random.nextInt(5, 10))
-        val padded = padding(prefix + pt + suffix)
+        val plaintext = prefix + pt + suffix
         val key = Random.nextBytes(16)
         val mode = if (modeForTesting == "RANDOM") {
             if (Random.nextBoolean()) "ECB" else "CBC"
@@ -27,7 +26,7 @@ class Challenge11Oracle(private val modeForTesting: String = "RANDOM"): Oracle {
             }
             else -> throw IllegalStateException()
         }
-        return aes.encrypt(padded)
+        return aes.encrypt(plaintext)
     }
 }
 
