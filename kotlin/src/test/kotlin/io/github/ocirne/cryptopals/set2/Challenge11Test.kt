@@ -7,13 +7,15 @@ internal class Challenge11Test {
 
     @Test
     fun `can detect ecb mode`() {
-        val oracle = Challenge11Oracle("ECB")
-        detectMode(oracle) shouldBe "ECB"
+        val oracle = Challenge11.RandomAesModeOracle("ECB")
+        val attacker = Challenge11.Attacker(oracle)
+        attacker.detectMode() shouldBe "ECB"
     }
 
     @Test
     fun `can detect cbc mode`() {
-        val oracle = Challenge11Oracle("CBC")
-        detectMode(oracle) shouldBe "CBC"
+        val oracle = Challenge11.RandomAesModeOracle("CBC")
+        val attacker = Challenge11.Attacker(oracle)
+        attacker.detectMode() shouldBe "CBC"
     }
 }

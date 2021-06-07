@@ -12,22 +12,22 @@ internal class Challenge12Test {
         YnkK
         """
 
-    private val oracle = Challenge12Oracle(unknownString)
+    private val oracle = Challenge12.SuffixEcbOracle(unknownString)
 
-    private val challenge12 = Challenge12(oracle)
+    private val attacker = Challenge12.Attacker(oracle)
 
     @Test
     fun `can discover block size`() {
-        challenge12.discoverBlockSize() shouldBe 16
+        attacker.discoverBlockSize() shouldBe 16
     }
 
     @Test
     fun `can discover mode`() {
-        challenge12.discoverMode() shouldBe "ECB"
+        attacker.discoverMode() shouldBe "ECB"
     }
 
     @Test
     fun `can crack with padding attack`() {
-        challenge12.crack().take(6) shouldBe "Rollin"
+        attacker.crack().take(6) shouldBe "Rollin"
     }
 }

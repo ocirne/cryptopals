@@ -9,13 +9,13 @@ internal class Challenge16Test {
 
     private val judge = Challenge16.Judge(oracle)
 
-    private val cracker = Challenge16.Cracker()
+    private val attacker = Challenge16.Attacker()
 
     @Test
     fun `can break challenge 16`() {
         val ciphertext = oracle.encrypt(";admin=true;".toByteArray())
         judge.isBroken(ciphertext) shouldBe false
-        val modified = cracker.modify(ciphertext)
+        val modified = attacker.modify(ciphertext)
         judge.isBroken(modified) shouldBe true
     }
 }

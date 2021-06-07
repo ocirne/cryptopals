@@ -5,36 +5,42 @@ import io.github.ocirne.cryptopals.Oracle
 import io.github.ocirne.cryptopals.crypto.AES
 import kotlin.random.Random
 
-class Challenge11Oracle(private val modeForTesting: String = "RANDOM"): Oracle {
+class Challenge11 {
 
-    override fun encrypt(pt: ByteArray): ByteArray {
-        val prefix = Random.nextBytes(Random.nextInt(5, 10))
-        val suffix = Random.nextBytes(Random.nextInt(5, 10))
-        val plaintext = prefix + pt + suffix
-        val key = Random.nextBytes(16)
-        val mode = if (modeForTesting == "RANDOM") {
-            if (Random.nextBoolean()) "ECB" else "CBC"
-        } else {
-            modeForTesting
-        }
-        val aes = when (mode) {
-            "ECB" ->
-                AES.ECB(key)
-            "CBC" -> {
-                val iv = Random.nextBytes(16)
-                AES.CBC(key, iv)
+    class RandomAesModeOracle(private val modeForTesting: String = "RANDOM") : Oracle {
+
+        override fun encrypt(pt: ByteArray): ByteArray {
+            val prefix = Random.nextBytes(Random.nextInt(5, 10))
+            val suffix = Random.nextBytes(Random.nextInt(5, 10))
+            val plaintext = prefix + pt + suffix
+            val key = Random.nextBytes(16)
+            val mode = if (modeForTesting == "RANDOM") {
+                if (Random.nextBoolean()) "ECB" else "CBC"
+            } else {
+                modeForTesting
             }
-            else -> throw IllegalStateException()
+            val aes = when (mode) {
+                "ECB" ->
+                    AES.ECB(key)
+                "CBC" -> {
+                    val iv = Random.nextBytes(16)
+                    AES.CBC(key, iv)
+                }
+                else -> throw IllegalStateException()
+            }
+            return aes.encrypt(plaintext)
         }
-        return aes.encrypt(plaintext)
     }
-}
 
-fun detectMode(oracle: Oracle): String {
-    // Why 48?: Make sure that block1 and block2 are all zero
-    val content = 0x00.toByte().repeat(48)
-    val secret = oracle.encrypt(content)
-    val block1 = secret.sliceArray(16..31)
-    val block2 = secret.sliceArray(32..47)
-    return if (block1.contentEquals(block2)) "ECB" else "CBC"
+    class Attacker(val oracle: Oracle) {
+
+        fun detectMode(): String {
+            // Why 48?: Make sure that block1 and block2 are all zero
+            val content = 0x00.toByte().repeat(48)
+            val secret = oracle.encrypt(content)
+            val block1 = secret.sliceArray(16..31)
+            val block2 = secret.sliceArray(32..47)
+            return if (block1.contentEquals(block2)) "ECB" else "CBC"
+        }
+    }
 }

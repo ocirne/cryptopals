@@ -33,7 +33,7 @@ class Challenge16 {
         }
     }
 
-    class Cracker {
+    class Attacker {
 
         fun modify(ct: ByteArray): ByteArray {
             val mutableCt = ct.copyOf()

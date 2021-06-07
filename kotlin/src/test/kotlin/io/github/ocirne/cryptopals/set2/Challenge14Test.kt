@@ -12,12 +12,12 @@ internal class Challenge14Test {
         YnkK
         """
 
-    private val oracle = Challenge14Oracle(unknownString)
+    private val oracle = Challenge14.PrefixSuffixEcbOracle(unknownString)
 
-    private val challenge14 = Challenge14(oracle)
+    private val attacker = Challenge14.Attacker(oracle)
 
     @Test
     fun `can crack with padding attack`() {
-        challenge14.crack().take(6) shouldBe "Rollin"
+        attacker.crack().take(6) shouldBe "Rollin"
     }
 }
