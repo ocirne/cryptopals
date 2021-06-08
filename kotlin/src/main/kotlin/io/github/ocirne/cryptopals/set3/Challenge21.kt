@@ -1,3 +1,4 @@
+package io.github.ocirne.cryptopals.set3
 
 class Challenge21 {
 
