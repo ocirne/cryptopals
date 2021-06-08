@@ -4,7 +4,7 @@ class Challenge21 {
 
     class MersenneTwister(seed: UInt) {
 
-        private val y = ArrayDeque<UInt>()
+        val y = ArrayDeque<UInt>()
 
         init {
             var x = seed
@@ -15,7 +15,7 @@ class Challenge21 {
             }
         }
 
-        private fun tempering(p: UInt): UInt {
+        fun tempering(p: UInt): UInt {
             var e = p
             e = e xor (e shr 11)
             e = e xor ((e shl 7) and 0x9D2C_5680u)
