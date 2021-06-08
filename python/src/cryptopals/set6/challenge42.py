@@ -1,4 +1,4 @@
-from cpcrypto import RSA, str_to_int
+from cryptopals.crypto import RSA, str_to_int
 
 "00h 01h ffh ... 00h ASN.1 HASH"
 
