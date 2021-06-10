@@ -105,6 +105,9 @@ object Basics {
 
     fun stripPadding(plaintext: ByteArray): ByteArray {
         val c = plaintext[plaintext.size-1]
+        if (c <= 0 || plaintext.size < c) {
+            throw InvalidPaddingException()
+        }
         val t = plaintext.sliceArray(0 until plaintext.size-c)
         val s = plaintext.sliceArray(plaintext.size-c until plaintext.size)
         if (s.contentEquals(c.repeat(s.size)) && (t.isEmpty() || t[t.size-1] != c)) {
