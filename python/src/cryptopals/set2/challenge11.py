@@ -13,8 +13,13 @@ def encryption_oracle(content, mode_for_testing=None):
         mode = AES.MODE_ECB if bool(random.getrandbits(1)) else AES.MODE_CBC
     else:
         mode = mode_for_testing
-    iv = secrets.token_bytes(16)
-    aes = AES.new(key, mode, iv)
+    if mode == AES.MODE_ECB:
+        aes = AES.new(key, mode)
+    elif mode == AES.MODE_CBC:
+        iv = secrets.token_bytes(16)
+        aes = AES.new(key, mode, iv)
+    else:
+        raise
     return aes.encrypt(padded)
 
 

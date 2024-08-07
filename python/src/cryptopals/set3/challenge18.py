@@ -3,6 +3,8 @@ import base64
 from Crypto.Cipher import AES
 from Crypto.Util import Counter
 
+from cryptopals.basics import from_hex
+
 BLOCK_SIZE = 16
 
 SECRET = base64.b64decode(b"L77na/nrFsKvynd6HzOoG7GHTLXsTVu9qvY/2syLXzhPweyyMTJULu/6/kXX0KSvoOLSFQ==")
@@ -11,7 +13,7 @@ KEY = b"YELLOW SUBMARINE"
 
 
 def aes_ctr():
-    ctr = Counter.new(64, prefix="\x00" * 8, little_endian=True, initial_value=0)
+    ctr = Counter.new(64, prefix=from_hex("00" * 8), little_endian=True, initial_value=0)
     return AES.new(KEY, AES.MODE_CTR, counter=ctr)
 
 

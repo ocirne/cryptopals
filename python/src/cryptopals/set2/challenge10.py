@@ -13,5 +13,5 @@ def challenge10(filename, key, iv):
     with open(filename) as f:
         content = f.read()
     ba = base64.b64decode(content)
-    cipher = AES.new(key, AES.MODE_CBC, iv)
+    cipher = AES.new(key.encode(), AES.MODE_CBC, iv.encode())
     return cipher.decrypt(ba)

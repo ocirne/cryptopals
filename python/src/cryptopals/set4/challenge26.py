@@ -4,6 +4,8 @@ from urllib.parse import quote_plus
 from Crypto.Cipher import AES
 from Crypto.Util import Counter
 
+from cryptopals.basics import from_hex
+
 BLOCK_SIZE = 16
 
 
@@ -14,7 +16,7 @@ class Oracle26:
         self.suffix = b'";comment2=%20like%20a%20pound%20of%20bacon"'
 
     def aes_ctr(self):
-        ctr = Counter.new(64, prefix="\x00" * 8, little_endian=True, initial_value=0)
+        ctr = Counter.new(64, prefix=from_hex("00" * 8), little_endian=True, initial_value=0)
         return AES.new(self.ctr_key, AES.MODE_CTR, counter=ctr)
 
     def encrypt(self, input_bytes: bytes):
