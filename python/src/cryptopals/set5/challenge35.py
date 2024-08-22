@@ -13,7 +13,7 @@ def aes_cbc_encrypt(priv_key: int, pt: bytes) -> bytes:
     s = priv_key.to_bytes(8, byteorder="big")
     key = SHA1().digest(s)[:16]
     iv = secrets.token_bytes(16)
-    aes = AES.new(key, AES.MODE_CBC, iv)
+    aes = AES.new(key, AES.MODE_CBC, iv)  # NOSONAR
     ct = aes.encrypt(padding(pt))
     return ct + iv
 
@@ -21,7 +21,7 @@ def aes_cbc_encrypt(priv_key: int, pt: bytes) -> bytes:
 def aes_cbc_decrypt(priv_key: int, ct: bytes, iv: bytes) -> bytes:
     s = priv_key.to_bytes(8, byteorder="big")
     key = SHA1().digest(s)[:16]
-    aes = AES.new(key, AES.MODE_CBC, iv)
+    aes = AES.new(key, AES.MODE_CBC, iv)  # NOSONAR
     pt = aes.decrypt(ct)
     return strip_padding(pt)
 
@@ -32,7 +32,7 @@ class Bob:
         self.g = g
         return "ACK"
 
-    def request_pub_key(self, A):
+    def request_pub_key(self, A):  # NOSONAR
         b = random.randrange(0, self.p)
         B = pow(self.g, b, self.p)
         self.s = pow(A, b, self.p)
@@ -50,7 +50,7 @@ class AbstractMallory(ABC):
     def request_groups(self, p, g):
         ...
 
-    def request_pub_key(self, A):
+    def request_pub_key(self, A):  # NOSONAR
         return self.bob.request_pub_key(A)
 
     def request_message(self, ciphertext_a: bytes) -> bytes:
@@ -65,7 +65,7 @@ class AbstractMallory(ABC):
 
 
 class Mallory1(AbstractMallory):
-    """ g = 1 """
+    """ Case: g = 1 """
 
     def request_groups(self, p, g):
         self.bob.request_groups(p, 1)
@@ -79,7 +79,7 @@ class Mallory1(AbstractMallory):
 
 
 class Mallory2(AbstractMallory):
-    """ g = p """
+    """ Case: g = p """
 
     def request_groups(self, p, g):
         self.bob.request_groups(p, p)
@@ -93,7 +93,7 @@ class Mallory2(AbstractMallory):
 
 
 class Mallory3(AbstractMallory):
-    """ g = p - 1 """
+    """ Case: g = p - 1 """
 
     def request_groups(self, p, g):
         self.p = p
@@ -111,7 +111,7 @@ class Mallory3(AbstractMallory):
 
 
 class Alice:
-    def __init__(self, bob: Union[Bob, Mallory1, Mallory2, Mallory3]):
+    def __init__(self, bob: Bob | Mallory1 | Mallory2 | Mallory3):
         self.bob = bob
         self.pt = b"Ice Ice Baby"
 

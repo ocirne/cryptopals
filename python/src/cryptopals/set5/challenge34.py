@@ -12,7 +12,7 @@ def aes_cbc_encrypt(priv_key: int, pt: bytes) -> bytes:
     s = priv_key.to_bytes(8, byteorder="big")
     key = SHA1().digest(s)[:16]
     iv = secrets.token_bytes(16)
-    aes = AES.new(key, AES.MODE_CBC, iv)
+    aes = AES.new(key, AES.MODE_CBC, iv)  # NOSONAR
     ct = aes.encrypt(padding(pt))
     return ct + iv
 
@@ -20,13 +20,13 @@ def aes_cbc_encrypt(priv_key: int, pt: bytes) -> bytes:
 def aes_cbc_decrypt(priv_key: int, ct: bytes, iv: bytes) -> bytes:
     s = priv_key.to_bytes(8, byteorder="big")
     key = SHA1().digest(s)[:16]
-    aes = AES.new(key, AES.MODE_CBC, iv)
+    aes = AES.new(key, AES.MODE_CBC, iv)  # NOSONAR
     pt = aes.decrypt(ct)
     return strip_padding(pt)
 
 
 class Bob:
-    def request_pub_key(self, p, g, A):
+    def request_pub_key(self, p, g, A):  # NOSONAR
         """
         B -> M
         Send "B"
@@ -48,7 +48,7 @@ class Mallory:
     def __init__(self, bob: Bob):
         self.bob = bob
 
-    def request_pub_key(self, p, g, A):
+    def request_pub_key(self, p, g, A):  # NOSONAR
         """
         A->M
         Send "p", "g", "p"
@@ -78,7 +78,7 @@ class Mallory:
 
 
 class Alice:
-    def __init__(self, bob: Union[Bob, Mallory]):
+    def __init__(self, bob: Bob | Mallory):
         self.bob = bob
         self.pt = b"Ice Ice Baby"
 

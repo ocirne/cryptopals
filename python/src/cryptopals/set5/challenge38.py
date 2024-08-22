@@ -19,7 +19,7 @@ def to_int(b: bytes) -> int:
     return int.from_bytes(b, sys.byteorder)
 
 
-def hash_public_key(A, B):
+def hash_public_key(A, B):  # NOSONAR
     return to_int(sha256((str(A) + str(B)).encode()))
 
 
@@ -41,7 +41,7 @@ N = int(
 g = 2
 k = 3
 email = b"test@example.com"
-password = b"sticky"
+password = b"sticky"  # NOSONAR
 
 
 class Server:
@@ -50,11 +50,11 @@ class Server:
         x = to_int(sha256(self.salt + password))
         self.v = pow(g, x, N)
 
-    def _server_k(self, A, b, u):
+    def _server_k(self, A, b, u):  # NOSONAR
         S = pow(A * pow(self.v, u, N), b, N)
         return sha256(to_bytes(S))
 
-    def request_key(self, I, A):
+    def request_key(self, I, A):  # NOSONAR
         b = secrets.randbelow(N)
         B = pow(g, b, N)
         u = secrets.randbits(128)
@@ -71,7 +71,7 @@ class Mallory:
     def __init__(self, server: Server):
         self.server = server
 
-    def request_key(self, I, A):
+    def request_key(self, I, A):  # NOSONAR
         self.A = A
         self.salt, _, _ = self.server.request_key(I, A)
         # set B = g, u = 1
@@ -102,10 +102,10 @@ class Mallory:
 
 
 class Client:
-    def __init__(self, server: Union[Mallory, Server]):
+    def __init__(self, server: Mallory | Server):
         self.server = server
 
-    def _client_k(self, salt, a, B, u):
+    def _client_k(self, salt, a, B, u):  # NOSONAR
         x = to_int(sha256(salt + password))
         S = pow(B, a + u * x, N)
         return sha256(to_bytes(S))

@@ -13,7 +13,7 @@ class Oracle26:
         self.iv = self.key
 
     def aes_cbc(self):
-        return AES.new(self.key, AES.MODE_CBC, self.iv)
+        return AES.new(self.key, AES.MODE_CBC, self.iv)  # NOSONAR
 
     def encrypt(self, pt: bytes):
         # ??

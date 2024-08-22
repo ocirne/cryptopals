@@ -25,12 +25,12 @@ def profile_for(email: str):
 
 def encrypt_profile(user_input, key):
     profile = profile_for(user_input).encode()
-    aes = AES.new(key, AES.MODE_ECB)
+    aes = AES.new(key, AES.MODE_ECB)  # NOSONAR
     return aes.encrypt(padding(profile))
 
 
 def decrypt_profile(secret, key):
-    aes = AES.new(key, AES.MODE_ECB)
+    aes = AES.new(key, AES.MODE_ECB)  # NOSONAR
     plain = strip_padding(aes.decrypt(secret)).decode()
     return key_value_parsing(plain)
 

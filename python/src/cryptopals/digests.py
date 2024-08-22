@@ -106,7 +106,7 @@ class SHA1:
                     f = b ^ c ^ d
                     k = 0xCA62C1D6
                 else:
-                    raise
+                    raise ValueError("i must be from 0 .. 79")
 
                 temp = (left_rotate(a, 5) + f + e + k + w[i]) & MASK
                 e = d
@@ -218,7 +218,7 @@ class MD5:
                     f = c ^ (b | (~d))
                     g = (7 * i) & 0xF
                 else:
-                    raise
+                    raise ValueError("i must be 0 .. 63")
 
                 # Be wary of the below definitions of a,b,c,d
                 f = (f + a + k[i] + m[g]) & MASK  # M[g] must be a 32-bits block

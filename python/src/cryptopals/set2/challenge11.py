@@ -19,7 +19,7 @@ def encryption_oracle(content, mode_for_testing=None):
         iv = secrets.token_bytes(16)
         aes = AES.new(key, mode, iv)
     else:
-        raise
+        raise ValueError("Unsupported mode %s" % mode)
     return aes.encrypt(padded)
 
 

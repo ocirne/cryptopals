@@ -45,4 +45,4 @@ class TinyServer(BaseHTTPRequestHandler):
 
 if __name__ == "__main__":
     httpd = HTTPServer(("localhost", 9000), TinyServer)
-    httpd.serve_forever()
+    httpd.serve_forever()  # NOSONAR

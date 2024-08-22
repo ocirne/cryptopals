@@ -33,8 +33,8 @@ class Oracle17:
         self.plain_text = base64.b64decode(random.choice(self.SECRETS))
 
     def encrypt(self):
-        aes = AES.new(self.KEY, AES.MODE_CBC, self.IV)
-        return bytes(aes.encrypt(padding(self.plain_text))), self.IV
+        aes = AES.new(self.KEY, AES.MODE_CBC, self.IV)  # NOSONAR
+        return bytes(aes.encrypt(padding(self.plain_text))), self.IV  # NOSONAR
 
     def decrypt(self, ciphertext: bytes, iv: bytes = IV):
         aes = AES.new(self.KEY, AES.MODE_CBC, iv)

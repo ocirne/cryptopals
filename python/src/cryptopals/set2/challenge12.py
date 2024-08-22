@@ -15,7 +15,7 @@ YnkK
 
 def encryption_oracle(your_string):
     padded = padding(your_string + b64decode(unknown_string))
-    aes = AES.new(key, AES.MODE_ECB)
+    aes = AES.new(key, AES.MODE_ECB)  # NOSONAR
     return aes.encrypt(padded)
 
 

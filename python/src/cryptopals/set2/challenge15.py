@@ -28,5 +28,5 @@ def challenge15(plaintext: bytes):
     """
     t = strip_padding(plaintext)
     if t is None:
-        raise Exception("Invalid padding")
+        raise ValueError("Invalid padding")
     return t

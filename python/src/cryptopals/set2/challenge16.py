@@ -16,7 +16,7 @@ class Oracle16:
         self.suffix = b'";comment2=%20like%20a%20pound%20of%20bacon"'
 
     def aes_cbc(self):
-        return AES.new(self.key, AES.MODE_CBC, self.iv)
+        return AES.new(self.key, AES.MODE_CBC, self.iv)  # NOSONAR
 
     def encrypt(self, input_string):
         plain_text = self.prefix + quote_plus(input_string).encode() + self.suffix

@@ -26,7 +26,7 @@ def to_int(b: bytes) -> int:
     return int.from_bytes(b, sys.byteorder)
 
 
-def hash_public_key(A, B):
+def hash_public_key(A, B):  # NOSONAR
     return to_int(sha256((str(A) + str(B)).encode()))
 
 
@@ -47,7 +47,7 @@ N = int(
 g = 2
 k = 3
 email = b"test@example.com"
-password = b"totally secure password"
+password = b"totally secure password"  # NOSONAR
 
 
 class Server:
@@ -58,11 +58,11 @@ class Server:
         x = to_int(sha256(self.salt + b":" + password))
         self.v = pow(g, x, N)
 
-    def _server_k(self, A, b, u):
+    def _server_k(self, A, b, u):  # NOSONAR
         S = pow(A * pow(self.v, u, N), b, N)
         return sha256(to_bytes(S))
 
-    def request_key(self, I, A):
+    def request_key(self, I, A):  # NOSONAR
         b = secrets.randbelow(N)
         B = (k * self.v + pow(g, b, N)) % N
         u = hash_public_key(A, B)
@@ -77,7 +77,7 @@ class Client:
     def __init__(self, server: Server):
         self.server = server
 
-    def _client_k(self, salt, a, B, u):
+    def _client_k(self, salt, a, B, u):  # NOSONAR
         x = to_int(sha256(salt + b":" + password))
         S = pow(B - k * pow(g, x, N), a + u * x, N)
         return sha256(to_bytes(S))

@@ -96,7 +96,7 @@ def invmod(a, n):
     45180085378
     >>> invmod(3, 73714876143)
     """
-    d, s, t = egcd(a, n)
+    d, s, _ = egcd(a, n)
     if d != 1:
         return
     if s < 0:

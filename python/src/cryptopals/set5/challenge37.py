@@ -5,7 +5,7 @@ class BadClient:
     def __init__(self, server: Server):
         self.server = server
 
-    def run(self, A):
+    def run(self, A):  # NOSONAR
         """ A = 0 = xN mod N for all x in N """
         salt, _ = self.server.request_key("any-email@example.com", A)
         K = sha256(to_bytes(0))

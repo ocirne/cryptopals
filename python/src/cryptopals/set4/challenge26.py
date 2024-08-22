@@ -28,16 +28,17 @@ class Oracle26:
 
 
 oracle = Oracle26()
+target_plaintext = b";admin=true;"
 
 
 def is_broken_c26(ciphertext: bytes):
     plaintext = oracle.decrypt(ciphertext)
-    return b";admin=true;" in plaintext
+    return target_plaintext in plaintext
 
 
 def modify(ct: bytes):
     mutable_ct = bytearray(ct)
-    for (i, (x, y)) in enumerate(zip(b"g%20MCs;user", b";admin=true;")):
+    for (i, (x, y)) in enumerate(zip(b"g%20MCs;user", target_plaintext)):
         mutable_ct[i + BLOCK_SIZE] ^= x ^ y
     return bytes(mutable_ct)
 
@@ -46,7 +47,7 @@ def challenge26():
     """
     >>> challenge26()
     """
-    ciphertext = oracle.encrypt(b";admin=true;")
+    ciphertext = oracle.encrypt(target_plaintext)
     modified = modify(ciphertext)
     #    plaintext = oracle.decrypt(ciphertext)
     #    mod_plaintext = oracle.decrypt(modified)

@@ -57,8 +57,8 @@ class Challenge6(text: String) {
         }
     }
 
-    private fun findKeyLetter(transposed_block: ByteArray): Byte {
-        val mostCommonByte = transposed_block.mostCommon()
+    private fun findKeyLetter(transposedBlock: ByteArray): Byte {
+        val mostCommonByte = transposedBlock.mostCommon()
         return mostCommonByte xor ' '.code.toByte()
     }
 

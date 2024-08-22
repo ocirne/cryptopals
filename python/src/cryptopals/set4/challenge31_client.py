@@ -37,7 +37,7 @@ def guess_next(known: str):
     result = None
     for i in range(16):
         c = f"{i:x}"
-        response, signature = timed_request(known, c)
+        response, _ = timed_request(known, c)
         if response.ok:
             return True, True, c, i + 1
         response_ms = response.elapsed.total_seconds()

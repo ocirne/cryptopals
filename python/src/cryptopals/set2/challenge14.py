@@ -20,7 +20,7 @@ YnkK"""
 
 
 def encryption_oracle(attacker_controlled):
-    aes = AES.new(key, AES.MODE_ECB)
+    aes = AES.new(key, AES.MODE_ECB)  # NOSONAR
     return aes.encrypt(padding(random_prefix + attacker_controlled + target_bytes))
 
 
