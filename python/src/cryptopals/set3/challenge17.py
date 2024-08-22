@@ -30,14 +30,14 @@ class Oracle17:
     IV = secrets.token_bytes(BLOCK_SIZE)
 
     def __init__(self):
-        self.plain_text = base64.b64decode(random.choice(self.SECRETS))
+        self.plain_text = base64.b64decode(random.choice(self.SECRETS))  # NOSONAR
 
     def encrypt(self):
         aes = AES.new(self.KEY, AES.MODE_CBC, self.IV)  # NOSONAR
         return bytes(aes.encrypt(padding(self.plain_text))), self.IV  # NOSONAR
 
     def decrypt(self, ciphertext: bytes, iv: bytes = IV):
-        aes = AES.new(self.KEY, AES.MODE_CBC, iv)
+        aes = AES.new(self.KEY, AES.MODE_CBC, iv)  # NOSONAR
         plain_text = aes.decrypt(ciphertext)
         return strip_padding(plain_text)
 

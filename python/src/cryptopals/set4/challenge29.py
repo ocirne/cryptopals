@@ -6,7 +6,7 @@ from cryptopals.digests import SHA1
 
 class Oracle29:
     def __init__(self):
-        self.key = secrets.token_bytes(random.randrange(5, 10))
+        self.key = secrets.token_bytes(random.randrange(5, 10))  # NOSONAR
 
     def mac(self, message):
         sha1 = SHA1()

@@ -8,7 +8,7 @@ from cryptopals.basics import padding, chunks
 BLOCK_SIZE = 16
 
 key = secrets.token_bytes(BLOCK_SIZE)
-random_prefix = secrets.token_bytes(randint(1, 100))
+random_prefix = secrets.token_bytes(randint(1, 100))  # NOSONAR
 
 target_bytes = b64decode(
     """

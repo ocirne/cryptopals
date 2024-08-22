@@ -7,7 +7,7 @@ ONE_HOUR = 60 * 60
 
 
 def wait_random():
-    wait_seconds = random.randint(40, 1000)
+    wait_seconds = random.randint(40, 1000)  # NOSONAR
     time.sleep(wait_seconds)
 
 

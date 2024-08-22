@@ -31,7 +31,7 @@ class Bob:
         B -> M
         Send "B"
         """
-        b = random.randrange(0, p)
+        b = random.randrange(0, p)  # NOSONAR
         B = pow(g, b, p)
         self.s = pow(A, b, p)
         return B
@@ -88,9 +88,9 @@ class Alice:
         Send "p", "g", "A"
         """
         # should be a prime, good enough
-        p = random.randint(0, 2 ** 31)
-        g = random.randint(0, 100)
-        a = random.randrange(0, p)
+        p = random.randint(0, 2 ** 31)  # NOSONAR
+        g = random.randint(0, 100)  # NOSONAR
+        a = random.randrange(0, p)  # NOSONAR
         A = pow(g, a, p)
         B = self.bob.request_pub_key(p, g, A)
         self.s = pow(B, a, p)

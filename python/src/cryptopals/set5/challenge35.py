@@ -33,7 +33,7 @@ class Bob:
         return "ACK"
 
     def request_pub_key(self, A):  # NOSONAR
-        b = random.randrange(0, self.p)
+        b = random.randrange(0, self.p)  # NOSONAR
         B = pow(self.g, b, self.p)
         self.s = pow(A, b, self.p)
         return B
@@ -117,9 +117,9 @@ class Alice:
 
     def request_groups(self):
         # should be a prime, good enough
-        self.p = random.randint(0, 2 ** 31)
-        self.g = random.randint(0, 100)
-        self.a = random.randrange(0, self.p)
+        self.p = random.randint(0, 2 ** 31)  # NOSONAR
+        self.g = random.randint(0, 100)  # NOSONAR
+        self.a = random.randrange(0, self.p)  # NOSONAR
         self.bob.request_groups(self.p, self.g)
 
     def request_pub_key(self):

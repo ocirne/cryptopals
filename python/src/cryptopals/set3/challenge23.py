@@ -30,7 +30,7 @@ def challenge23():
     >>> orig, copy = challenge23()
     >>> assert all(o == c for o, c in zip(orig.generate(624), copy.generate(624)))
     """
-    seed = random.randint(1, 2 ** 31)
+    seed = random.randint(1, 2 ** 31)  # NOSONAR
     orig_mt = MersenneTwister(seed)
     copy_mt = MersenneTwister(0)
     for index, p in enumerate(orig_mt.generate(624)):

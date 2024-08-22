@@ -5,12 +5,12 @@ from cryptopals.basics import padding
 
 
 def encryption_oracle(content, mode_for_testing=None):
-    prefix = secrets.token_bytes(random.randint(5, 10))
-    suffix = secrets.token_bytes(random.randint(5, 10))
+    prefix = secrets.token_bytes(random.randint(5, 10))  # NOSONAR
+    suffix = secrets.token_bytes(random.randint(5, 10))  # NOSONAR
     padded = padding(prefix + content + suffix)
     key = secrets.token_bytes(16)
     if mode_for_testing is None:
-        mode = AES.MODE_ECB if bool(random.getrandbits(1)) else AES.MODE_CBC
+        mode = AES.MODE_ECB if bool(random.getrandbits(1)) else AES.MODE_CBC  # NOSONAR
     else:
         mode = mode_for_testing
     if mode == AES.MODE_ECB:

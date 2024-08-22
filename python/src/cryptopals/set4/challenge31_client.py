@@ -7,7 +7,7 @@ URL = "http://localhost:9000/test"
 
 
 def random_padding(length):
-    return "".join(random.choice("0123456789abcdef") for _ in range(length))
+    return "".join(random.choice("0123456789abcdef") for _ in range(length))  # NOSONAR
 
 
 def timed_request(signature_prefix: str, guess: str):

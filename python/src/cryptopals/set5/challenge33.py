@@ -2,8 +2,8 @@ import random
 
 
 def challenge33(p, g):
-    a = random.randrange(0, p)
-    b = random.randrange(0, p)
+    a = random.randrange(0, p)  # NOSONAR
+    b = random.randrange(0, p)  # NOSONAR
     A = pow(g, a, p)
     B = pow(g, b, p)
     s = pow(B, a, p)

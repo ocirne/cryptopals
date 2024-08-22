@@ -70,7 +70,7 @@ def password_token_oracle():
     """
     Create a password token randomly in the past hour
     """
-    past_time = int(time.time()) - random.randint(1, 3600)
+    past_time = int(time.time()) - random.randint(1, 3600)  # NOSONAR
     return generate_password_reset_token(past_time), past_time
 
 

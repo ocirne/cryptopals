@@ -6,7 +6,7 @@ from cryptopals.digests import MD5, MASK
 
 class Oracle30:
     def __init__(self):
-        self.key = secrets.token_bytes(random.randrange(5, 10))
+        self.key = secrets.token_bytes(random.randrange(5, 10))  # NOSONAR
         self.original_message = "Ice Ice Baby"
 
     def mac(self, message):
